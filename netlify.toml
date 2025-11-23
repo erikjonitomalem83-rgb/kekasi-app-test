@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Scheduled function untuk auto-reserve (jalan 3x sehari)
+[[functions]]
+  path = "/.netlify/functions/auto-reserve-admin-pool"
+  schedule = "0 2,10,18 * * *"
