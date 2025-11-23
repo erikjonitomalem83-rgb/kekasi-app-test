@@ -86,11 +86,11 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, curren
       }
 
       // Update password di Supabase Auth
-      const { error: authError } = await supabase.auth.updateUser({
-        password: formData.newPassword,
-      });
+      // const { error: authError } = await supabase.auth.updateUser({
+      //   password: formData.newPassword,
+      // });
 
-      if (authError) throw authError;
+      // if (authError) throw authError;
 
       // Update password di tabel users
       const { error: updateError } = await supabase
