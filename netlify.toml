@@ -15,7 +15,3 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Scheduled function untuk auto-reserve (jalan 3x sehari)
-[[functions]]
-  name = "auto-reserve-admin-pool"
-  schedule = "0 2,10,18 * * *"
