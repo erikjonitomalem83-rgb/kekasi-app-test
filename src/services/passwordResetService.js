@@ -58,6 +58,23 @@ export const requestPasswordReset = async (email) => {
         }),
       });
 
+      // TAMBAHAN LOG DEBUG
+      console.log("[PASSWORD_RESET] Response status:", response.status);
+      console.log("[PASSWORD_RESET] Response headers:", response.headers);
+
+      const contentType = response.headers.get("content-type");
+      console.log("[PASSWORD_RESET] Content-Type:", contentType);
+
+      // Cek apakah response adalah HTML (error page)
+      if (contentType && contentType.includes("text/html")) {
+        const htmlText = await response.text();
+        console.error("[PASSWORD_RESET] Received HTML instead of JSON:", htmlText.substring(0, 500));
+        return {
+          success: false,
+          error: "Function endpoint tidak ditemukan atau error. Cek Netlify Function logs.",
+        };
+      }
+
       const result = await response.json();
 
       if (!response.ok) {
