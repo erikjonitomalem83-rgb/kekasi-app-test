@@ -226,19 +226,38 @@ const NotificationProvider = ({ children }) => {
   const showToast = useCallback(
     (options) => {
       const { type = "info", title, message, duration = 5000 } = options;
-      const id = Date.now();
 
-      setToasts((prev) => [...prev, { id, type, title, message }]);
+      // ✅ CRITICAL: Check duplicate toast dengan message yang sama
+      setToasts((prev) => {
+        // Cek apakah sudah ada toast dengan message yang persis sama
+        const isDuplicate = prev.some(
+          (toast) => toast.message === message && toast.title === title && toast.type === type
+        );
 
-      if (duration > 0) {
-        setTimeout(() => {
-          removeToast(id);
-        }, duration);
-      }
+        if (isDuplicate) {
+          console.log("[Notification] Duplicate toast prevented:", { title, message });
+          return prev; // ← Skip, tidak tambah toast baru
+        }
 
-      return id;
+        const id = Date.now() + Math.random(); // ← Tambah random untuk prevent collision
+
+        // Tambah toast baru
+        const newToast = { id, type, title, message };
+
+        // Schedule removal
+        if (duration > 0) {
+          setTimeout(() => {
+            removeToast(id);
+          }, duration);
+        }
+
+        console.log("[Notification] Toast added:", { id, title, message });
+        return [...prev, newToast];
+      });
+
+      return Date.now(); // Return timestamp sebagai ID
     },
-    [removeToast] // Tambahkan dependency
+    [removeToast]
   );
 
   const showSuccessToast = useCallback(

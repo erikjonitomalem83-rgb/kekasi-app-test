@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+let activeSessionChannel = null; // ← Global tracker untuk channel aktif
 
 /**
  * Generate unique session token
@@ -189,10 +190,26 @@ export async function destroySession(userId, cancelReservedNumbers = false) {
 export function subscribeToSessionChanges(userId, onForceLogout) {
   const sessionToken = localStorage.getItem("kekasi_session_token");
 
-  if (!sessionToken) return null;
+  if (!sessionToken) {
+    console.log("[sessionService] No session token, skipping subscription");
+    return null;
+  }
+
+  // ✅ CRITICAL: Unsubscribe channel lama sebelum buat baru
+  if (activeSessionChannel) {
+    console.log("[sessionService] ⚠️ Found existing channel, unsubscribing...");
+    try {
+      activeSessionChannel.unsubscribe();
+    } catch (err) {
+      console.error("[sessionService] Error unsubscribing old channel:", err);
+    }
+    activeSessionChannel = null;
+  }
+
+  console.log("[sessionService] 🔔 Creating NEW session channel for user:", userId);
 
   const channel = supabase
-    .channel(`session-${userId}`)
+    .channel(`session-${userId}-${Date.now()}`) // ← Unique channel name
     .on(
       "postgres_changes",
       {
@@ -202,16 +219,36 @@ export function subscribeToSessionChanges(userId, onForceLogout) {
         filter: `user_id=eq.${userId}`,
       },
       (payload) => {
-        console.log("[Session] Change detected:", payload);
+        console.log("[Session] 📡 Change detected:", payload);
 
         // Cek apakah session kita yang di-deactivate
         if (payload.new.session_token === sessionToken && !payload.new.is_active) {
-          console.log("[Session] Force logout detected");
+          console.log("[Session] 🚨 Force logout detected - OUR session was deactivated!");
           onForceLogout();
+        } else {
+          console.log("[Session] ℹ️ Session change was for different session, ignoring");
         }
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log("[sessionService] Subscription status:", status);
+    });
+
+  // ✅ Simpan ke global tracker
+  activeSessionChannel = channel;
 
   return channel;
+}
+
+// ✅ TAMBAHKAN cleanup function
+export function cleanupSessionChannel() {
+  if (activeSessionChannel) {
+    console.log("[sessionService] 🧹 Cleaning up session channel");
+    try {
+      activeSessionChannel.unsubscribe();
+    } catch (err) {
+      console.error("[sessionService] Error cleaning up channel:", err);
+    }
+    activeSessionChannel = null;
+  }
 }

@@ -200,19 +200,38 @@ export default function Dashboard() {
     if (!profile?.id) return;
 
     const checkSession = async () => {
+      // ✅ PENTING: Skip check jika sedang logout ATAU tidak ada profile
+      if (window.isLoggingOut || !profile?.id) {
+        console.log("[Dashboard] Skipping session check - logout in progress or no profile");
+        return;
+      }
+
+      // ✅ Cek localStorage untuk verifikasi kita masih login
+      const kekasiAuth = localStorage.getItem("kekasi-auth");
+      if (!kekasiAuth) {
+        console.log("[Dashboard] No auth data found, skipping session check");
+        return;
+      }
+
       const result = await validateSession(profile.id);
 
       if (!result.valid) {
         console.log("[Dashboard] Invalid session detected, forcing logout...");
 
-        notification.showWarningToast(
-          "Sesi Tidak Valid",
-          "Akun Anda telah login dari perangkat lain. Anda akan logout otomatis.",
-          5000
-        );
+        // ✅ JANGAN tampilkan notif jika isLoggingOut sudah true
+        if (!window.isLoggingOut) {
+          notification.showWarningToast(
+            "Sesi Tidak Valid",
+            "Akun Anda telah login dari perangkat lain. Anda akan logout otomatis.",
+            5000
+          );
 
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        await handleLogoutRef.current(true);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+
+        if (handleLogoutRef.current) {
+          await handleLogoutRef.current(true);
+        }
       }
     };
 
@@ -222,23 +241,43 @@ export default function Dashboard() {
     // Check every 30 seconds
     const interval = setInterval(checkSession, 30000);
 
-    return () => clearInterval(interval);
-  }, [profile, notification]);
+    // Simpan interval ID ke window agar bisa di-clear saat logout
+    window.sessionCheckInterval = interval;
 
+    return () => {
+      clearInterval(interval);
+      if (window.sessionCheckInterval === interval) {
+        window.sessionCheckInterval = null;
+      }
+    };
+  }, [profile, notification]);
   // Realtime session monitor - detect force logout immediately
   useEffect(() => {
     if (!profile?.id) return;
 
+    console.log("[Dashboard] 🔔 Setting up realtime session monitor for user:", profile.id);
+
+    // ✅ Flag untuk prevent duplicate trigger dalam satu instance
+    let forceLogoutTriggered = false;
+
     const handleForceLogout = async () => {
-      console.log("[Dashboard] Force logout detected from another device");
+      // ✅ Skip jika sudah triggered atau sedang logout
+      if (forceLogoutTriggered || window.isLoggingOut) {
+        console.log("[Dashboard] ⚠️ Force logout already triggered or logout in progress, skipping...");
+        return;
+      }
 
-      // PENTING: Cek apakah ada reserved numbers
-      const hasReserved = reservedNumbers && reservedNumbers.length > 0;
+      forceLogoutTriggered = true;
+      console.log("[Dashboard] 🚨 Force logout detected from another device - TRIGGERING LOGOUT");
 
-      if (hasReserved) {
+      // ✅ Ambil reserved count dari current state (closure)
+      const currentReservedCount = reservedNumbers ? reservedNumbers.length : 0;
+
+      // ✅ Tampilkan HANYA 1 notifikasi
+      if (currentReservedCount > 0) {
         notification.showWarningToast(
           "Login dari Perangkat Lain",
-          `Akun Anda telah login dari perangkat lain.\n\n${reservedNumbers.length} nomor yang Anda pesan akan dibatalkan otomatis.\n\nSesi ini akan diakhiri.`,
+          `Akun Anda telah login dari perangkat lain.\n\n${currentReservedCount} nomor yang Anda pesan akan dibatalkan otomatis.\n\nSesi ini akan diakhiri.`,
           6000
         );
       } else {
@@ -249,16 +288,26 @@ export default function Dashboard() {
         );
       }
 
+      // Wait 2 detik sebelum logout
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      await handleLogoutRef.current(true);
+
+      // Trigger logout
+      if (handleLogoutRef.current) {
+        await handleLogoutRef.current(true);
+      }
     };
 
+    // Subscribe ke session changes
     const channel = subscribeToSessionChanges(profile.id, handleForceLogout);
 
+    // Cleanup
     return () => {
-      if (channel) channel.unsubscribe();
+      console.log("[Dashboard] 🧹 Cleaning up realtime session monitor");
+      if (channel) {
+        channel.unsubscribe();
+      }
     };
-  }, [profile, notification, reservedNumbers]);
+  }, [profile?.id]); // ✅ ONLY profile.id - hapus notification & reservedNumbers!
 
   // Monitor lock status
   useEffect(() => {
@@ -417,6 +466,34 @@ export default function Dashboard() {
 
   // HANDLE LOGOUT FUNCTION
   const handleLogout = async (skipConfirm = false) => {
+    window.isLoggingOut = true;
+    console.log("[Logout] isLoggingOut flag set to true");
+
+    // Stop session checker
+    if (window.sessionCheckInterval) {
+      clearInterval(window.sessionCheckInterval);
+      window.sessionCheckInterval = null;
+      console.log("[Logout] Session checker stopped");
+    }
+
+    // ✅ TAMBAHKAN: Cleanup session channel
+    try {
+      const { cleanupSessionChannel } = await import("../services/sessionService");
+      cleanupSessionChannel();
+      console.log("[Logout] 🧹 Session channel cleaned up");
+    } catch (err) {
+      console.warn("[Logout] Could not cleanup session channel:", err);
+    }
+
+    // Clear localStorage
+    try {
+      localStorage.removeItem("kekasi-auth");
+      localStorage.removeItem("kekasi_session_token");
+      console.log("[Logout] Auth data cleared from localStorage");
+    } catch (e) {
+      console.warn("[Logout] Could not clear localStorage:", e);
+    }
+
     if (!skipConfirm) {
       const confirmed = await notification.confirmAction({
         type: "warning",
@@ -427,7 +504,10 @@ export default function Dashboard() {
         cancelText: "Batal",
       });
 
-      if (!confirmed) return;
+      if (!confirmed) {
+        window.isLoggingOut = false;
+        return;
+      }
     }
 
     console.log("=== LOGOUT PROCESS STARTED ===");
@@ -536,6 +616,9 @@ export default function Dashboard() {
         navigate("/login", { replace: true });
         window.location.reload();
       }
+    } finally {
+      // Clear flag setelah logout selesai
+      window.isLoggingOut = false;
     }
   };
 
