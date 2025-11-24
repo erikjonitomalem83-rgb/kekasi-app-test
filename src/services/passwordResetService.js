@@ -42,7 +42,10 @@ export const requestPasswordReset = async (email) => {
     console.log("[PASSWORD_RESET] Invoking Resend email function");
 
     try {
-      const netlifyFunctionUrl = `${window.location.origin}/.netlify/functions/send-reset-password-email`;
+      const isDev = window.location.hostname === "localhost";
+      const netlifyFunctionUrl = isDev
+        ? "http://localhost:8888/.netlify/functions/send-reset-password-email"
+        : "/.netlify/functions/send-reset-password-email";
 
       console.log("[PASSWORD_RESET] Calling Netlify Function:", netlifyFunctionUrl);
 
