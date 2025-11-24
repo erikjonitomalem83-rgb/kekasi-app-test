@@ -42,23 +42,33 @@ export const requestPasswordReset = async (email) => {
     console.log("[PASSWORD_RESET] Invoking Resend email function");
 
     try {
-      const { data: emailResponse, error: sendError } = await supabase.functions.invoke("send-reset-password-email", {
-        body: {
+      const netlifyFunctionUrl = `${window.location.origin}/.netlify/functions/send-reset-password-email`;
+
+      console.log("[PASSWORD_RESET] Calling Netlify Function:", netlifyFunctionUrl);
+
+      const response = await fetch(netlifyFunctionUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           email: userData.email,
           nama_lengkap: userData.nama_lengkap,
           resetLink: resetLink,
-        },
+        }),
       });
 
-      if (sendError) {
-        console.error("[PASSWORD_RESET] Email send error:", sendError);
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("[PASSWORD_RESET] Email send error:", result);
         return {
           success: false,
-          error: sendError.message || "Gagal mengirim email reset password",
+          error: result.error || "Gagal mengirim email reset password",
         };
       }
 
-      console.log("[PASSWORD_RESET] Email sent successfully:", emailResponse);
+      console.log("[PASSWORD_RESET] Email sent successfully:", result);
 
       return {
         success: true,
