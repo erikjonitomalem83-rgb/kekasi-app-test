@@ -88,13 +88,13 @@ export default function UserListModal({ isOpen, onClose, notification }) {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-100 border-b-2 border-gray-300">
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">No</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">Nama Lengkap</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">Username</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">Seksi</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">No. HP</th>
-                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700">Role</th>
-                    <th className="px-4 py-3 text-center text-sm font-bold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">No</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">Nama Lengkap</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">Username</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">Seksi</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">No. HP</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 text-center">Role</th>
+                    <th className="px-4 py-3 text-center text-sm font-bold text-gray-700 text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>
