@@ -34,6 +34,7 @@ import { supabase } from "../services/supabase";
 import HistoryModal from "../components/common/HistoryModal";
 import NomorLamaModal from "../components/common/NomorLamaModal";
 import RekapModal from "../components/common/RekapModal";
+import UserListModal from "../components/common/UserListModal";
 
 export default function Dashboard() {
   // ========== HOOK PERTAMA DAN SATU-SATUNYA ==========
@@ -78,6 +79,7 @@ export default function Dashboard() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showNomorLamaModal, setShowNomorLamaModal] = useState(false);
   const [showRekapModal, setShowRekapModal] = useState(false);
+  const [showUserListModal, setShowUserListModal] = useState(false);
   const [idleWarningShown, setIdleWarningShown] = useState(false);
 
   // ========== REF UNTUK AVOID CIRCULAR DEPENDENCY ==========
@@ -1178,21 +1180,39 @@ export default function Dashboard() {
             </button>
 
             {(isAdmin || profile?.role === "superadmin") && (
-              <button
-                onClick={() => setShowCreateUserModal(true)}
-                className="bg-green-600 text-white px-3 lg:px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition text-xs lg:text-sm whitespace-nowrap"
-                disabled={isSubmitting}
-              >
-                <span className="hidden lg:inline">Buat Akun Baru</span>
-                <svg className="w-5 h-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                  />
-                </svg>
-              </button>
+              <>
+                <button
+                  onClick={() => setShowCreateUserModal(true)}
+                  className="bg-green-600 text-white px-3 lg:px-4 py-2 rounded-md font-semibold hover:bg-green-700 transition text-xs lg:text-sm whitespace-nowrap"
+                  disabled={isSubmitting}
+                >
+                  <span className="hidden lg:inline">Buat Akun Baru</span>
+                  <svg className="w-5 h-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => setShowUserListModal(true)}
+                  className="bg-purple-600 text-white px-3 lg:px-4 py-2 rounded-md font-semibold hover:bg-purple-700 transition text-xs lg:text-sm whitespace-nowrap"
+                  disabled={isSubmitting}
+                >
+                  <span className="hidden lg:inline">Users</span>
+                  <svg className="w-5 h-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  </svg>
+                </button>
+              </>
             )}
 
             {isAdmin && (
@@ -1994,6 +2014,13 @@ export default function Dashboard() {
         notification={notification}
         isAdmin={isAdmin}
         userId={profile?.id}
+      />
+
+      {/* User List Modal */}
+      <UserListModal
+        isOpen={showUserListModal}
+        onClose={() => setShowUserListModal(false)}
+        notification={notification}
       />
     </div>
   );
