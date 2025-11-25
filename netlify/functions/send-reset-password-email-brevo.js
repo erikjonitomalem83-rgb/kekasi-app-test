@@ -110,7 +110,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         sender: {
           name: "KEKASI",
-          email: "9c81ca001@smtp-brevo.com",
+          email: "erikjonitomalem83@gmail.com",
         },
         to: [
           {
