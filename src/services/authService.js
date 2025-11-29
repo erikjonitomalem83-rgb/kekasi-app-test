@@ -101,11 +101,22 @@ export async function login(username, password) {
     console.log("Login successful!");
 
     // Create session untuk enforce single login
-    const { createSession } = await import("./sessionService");
-    const sessionResult = await createSession(userData.id);
+    console.log("[AUTH] Attempting to create session for user:", userData.id);
+    try {
+      const { createSession } = await import("./sessionService");
+      console.log("[AUTH] createSession imported successfully");
 
-    if (!sessionResult.success) {
-      console.error("Failed to create session:", sessionResult.error);
+      const sessionResult = await createSession(userData.id);
+      console.log("[AUTH] createSession result:", sessionResult);
+
+      if (!sessionResult.success) {
+        console.error("[AUTH] Failed to create session:", sessionResult.error);
+      } else {
+        console.log("[AUTH] ✅ Session created successfully!");
+      }
+    } catch (sessionError) {
+      console.error("[AUTH] ❌ Error creating session:", sessionError);
+      // Don't fail login if session creation fails
     }
 
     return {
