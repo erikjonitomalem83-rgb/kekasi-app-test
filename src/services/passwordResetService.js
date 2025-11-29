@@ -43,13 +43,13 @@ export const requestPasswordReset = async (email) => {
 
     try {
       const isDev = window.location.hostname === "localhost";
-      const netlifyFunctionUrl = isDev
-        ? "http://localhost:8888/.netlify/functions/send-reset-password-email-brevo"
-        : "/.netlify/functions/send-reset-password-email-brevo";
+      const vercelApiUrl = isDev
+        ? "http://localhost:3001/api/send-reset-password-email-brevo"
+        : "/api/send-reset-password-email-brevo";
 
-      console.log("[PASSWORD_RESET] Calling Netlify Function:", netlifyFunctionUrl);
+      console.log("[PASSWORD_RESET] Calling Vercel API:", vercelApiUrl);
 
-      const response = await fetch(netlifyFunctionUrl, {
+      const response = await fetch(vercelApiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
