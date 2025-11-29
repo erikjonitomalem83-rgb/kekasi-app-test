@@ -240,8 +240,9 @@ export default function Dashboard() {
     // Check immediately on mount
     checkSession();
 
-    // Check every 30 seconds
-    const interval = setInterval(checkSession, 30000);
+    // CRITICAL: Check every 5 seconds (faster than before for better UX)
+    // This is a backup mechanism if Realtime fails
+    const interval = setInterval(checkSession, 5000);
 
     // Simpan interval ID ke window agar bisa di-clear saat logout
     window.sessionCheckInterval = interval;
