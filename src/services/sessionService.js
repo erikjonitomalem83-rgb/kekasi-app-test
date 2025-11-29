@@ -221,8 +221,14 @@ export function subscribeToSessionChanges(userId, onForceLogout) {
       (payload) => {
         console.log("[Session] 📡 Change detected:", payload);
 
-        // Cek apakah session kita yang di-deactivate
-        if (payload.new.session_token === sessionToken && !payload.new.is_active) {
+        // CRITICAL FIX: Detect when a DIFFERENT session becomes active
+        // This means someone else logged in with our account
+        if (payload.new.session_token !== sessionToken && payload.new.is_active) {
+          console.log("[Session] 🚨 Force logout detected - DIFFERENT session is now active!");
+          console.log("[Session] Our token:", sessionToken);
+          console.log("[Session] New active token:", payload.new.session_token);
+          onForceLogout();
+        } else if (payload.new.session_token === sessionToken && !payload.new.is_active) {
           console.log("[Session] 🚨 Force logout detected - OUR session was deactivated!");
           onForceLogout();
         } else {
