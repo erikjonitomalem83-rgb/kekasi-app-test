@@ -4,20 +4,9 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
-  "headers": [
-    {
-      "source": "/icon_kekasi.ico",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    }
-  ],
   "rewrites": [
     {
-      "source": "/((?!.*\\.(ico|svg|png|jpg|jpeg|gif|webp|mp3|wav|ogg|css|js|json|woff|woff2|ttf|eot)).*)",
+      "source": "/:path((?!api|icon_kekasi\\.ico|sounds|assets).*)",
       "destination": "/index.html"
     }
   ]
