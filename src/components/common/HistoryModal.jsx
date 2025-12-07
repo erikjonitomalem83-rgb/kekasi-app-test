@@ -293,7 +293,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
         >
           <div>
             <h2 className="text-xl font-bold text-white text-left">
-              {activeTab === "confirmed" ? "Riwayat Nomor Surat Dikonfirmasi" : "Riwayat Nomor Emergency"}
+              {activeTab === "confirmed" ? "Riwayat Nomor Surat Terkonfirmasi" : "Riwayat Nomor Emergency"}
             </h2>
             <p className="text-sm text-gray-200 mt-1 text-left">
               {activeTab === "confirmed"
