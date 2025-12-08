@@ -35,6 +35,7 @@ import HistoryModal from "../components/common/HistoryModal";
 import NomorLamaModal from "../components/common/NomorLamaModal";
 import RekapModal from "../components/common/RekapModal";
 import UserListModal from "../components/common/UserListModal";
+import ConfirmationResumeModal from "../components/common/ConfirmationResumeModal";
 
 export default function Dashboard() {
   // ========== HOOK PERTAMA DAN SATU-SATUNYA ==========
@@ -81,6 +82,8 @@ export default function Dashboard() {
   const [showRekapModal, setShowRekapModal] = useState(false);
   const [showUserListModal, setShowUserListModal] = useState(false);
   const [idleWarningShown, setIdleWarningShown] = useState(false);
+  const [showConfirmationResumeModal, setShowConfirmationResumeModal] = useState(false);
+  const [confirmedNumbersData, setConfirmedNumbersData] = useState([]);
 
   // ========== REF UNTUK AVOID CIRCULAR DEPENDENCY ==========
   const handleLogoutRef = useRef();
@@ -868,10 +871,15 @@ export default function Dashboard() {
 
       await Promise.all(promises);
 
+      // Simpan data yang dikonfirmasi sebelum reset
+      setConfirmedNumbersData([...reservedNumbers]);
+
       notification.showSuccessToast("Konfirmasi Berhasil", "Semua nomor berhasil dikonfirmasi!");
 
+      // Reset state dan tampilkan modal resume
       setReservedNumbers(null);
       handleReset();
+      setShowConfirmationResumeModal(true);
     } catch (error) {
       console.error("Error konfirmasi:", error);
       notification.showErrorToast("Error Konfirmasi", "Gagal konfirmasi nomor: " + error.message);
@@ -2022,6 +2030,13 @@ export default function Dashboard() {
         isOpen={showUserListModal}
         onClose={() => setShowUserListModal(false)}
         notification={notification}
+      />
+
+      {/* Confirmation Resume Modal */}
+      <ConfirmationResumeModal
+        isOpen={showConfirmationResumeModal}
+        onClose={() => setShowConfirmationResumeModal(false)}
+        confirmedNumbers={confirmedNumbersData}
       />
     </div>
   );
