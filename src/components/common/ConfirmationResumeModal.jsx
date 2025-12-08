@@ -118,8 +118,8 @@ export default function ConfirmationResumeModal({ isOpen, onClose, confirmedNumb
           <thead>
             <tr>
               <th style="width: 50px; text-align: center;">No</th>
-              <th>Nomor Surat</th>
-              <th>Keterangan</th>
+              <th style="text-align: center;">Nomor Surat</th>
+              <th style="text-align: center;">Keterangan</th>
             </tr>
           </thead>
           <tbody>
