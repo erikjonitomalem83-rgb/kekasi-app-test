@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --kekasi-blue: #00325f;
+    --kekasi-yellow: #efbc62;
+    --reserve-timeout: 300000;
+  }
+}
+
+/* Custom Base Styles */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans;
+  }
+
+  h1 {
+    @apply text-3xl font-bold text-kekasi-blue;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-kekasi-blue;
+  }
+
+  h3 {
+    @apply text-xl font-semibold text-gray-800;
+  }
+}
+
+/* Custom Component Styles */
+@layer components {
+  .btn-primary {
+    @apply bg-kekasi-yellow hover:bg-kekasi-yellow-dark text-kekasi-blue 
+           font-semibold px-4 py-2 rounded-lg transition-colors 
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-kekasi-blue hover:bg-kekasi-blue-dark text-white 
+           font-semibold px-4 py-2 rounded-lg transition-colors
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-kekasi-blue 
+           focus:border-transparent uppercase;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .badge-reserved {
+    @apply bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-confirmed {
+    @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-cancelled {
+    @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium;
+  }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-kekasi-blue to-kekasi-yellow 
+           bg-clip-text text-transparent;
+  }
+
+  .shadow-kekasi {
+    box-shadow: 0 4px 14px rgba(0, 50, 95, 0.15);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 3px solid rgba(0, 50, 95, 0.1);
+  border-top: 3px solid #00325f;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

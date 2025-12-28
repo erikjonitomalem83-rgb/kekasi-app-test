@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/:path((?!api|icon_kekasi\\.ico|sounds|assets).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

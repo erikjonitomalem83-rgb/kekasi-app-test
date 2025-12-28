@@ -1,0 +1,538 @@
+/* ============================================
+   NOTIFICATION SYSTEM - CSS (FIXED)
+   Professional Toast & Modal Notifications
+   ============================================ */
+
+:root {
+  /* Colors dari sistem Anda */
+  --primary-yellow: #dec05f;
+  --primary-dark: #2e2f36;
+  --secondary-blue: #00325f;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+
+  /* Shadow & Animation */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --shadow-gold: 0 8px 24px rgba(222, 192, 95, 0.25);
+}
+
+/* Toast Container */
+.notification-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+/* Toast Item */
+.notification-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 450px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  border: 2px solid;
+  pointer-events: auto;
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-toast.exiting {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Toast Variants */
+.notification-toast.success {
+  background-color: var(--success-color);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: white;
+}
+
+.notification-toast.error {
+  background-color: var(--error-color);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: white;
+}
+
+.notification-toast.warning {
+  background-color: var(--warning-color);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: white;
+}
+
+.notification-toast.info {
+  background-color: var(--info-color);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: white;
+}
+
+/* Toast Icon */
+.notification-toast-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+/* Toast Content */
+.notification-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-toast-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.notification-toast-message {
+  font-size: 13px;
+  opacity: 0.95;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Toast Close Button */
+.notification-toast-close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-toast-close:hover {
+  opacity: 1;
+}
+
+/* Modal Backdrop - FIXED: Warna lebih gelap */
+.notification-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.notification-modal-backdrop.exiting {
+  animation: fadeOut 0.2s ease-out;
+}
+
+/* BARU: Animasi untuk modal management */
+.modal-management-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.3s ease-out;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.modal-management-backdrop.closing {
+  opacity: 0;
+}
+
+.modal-management-content {
+  transform: scale(1);
+  transition: transform 0.3s ease-out;
+}
+
+.modal-management-backdrop.closing .modal-management-content {
+  transform: scale(0.95);
+}
+
+/* Modal Container */
+.notification-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 100%;
+  overflow: hidden;
+  animation: scaleIn 0.2s ease-out;
+}
+
+.notification-modal-backdrop.exiting .notification-modal {
+  animation: scaleOut 0.2s ease-out;
+}
+
+/* Modal Header - FIXED: Warna lebih solid dan vivid */
+.notification-modal-header {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.notification-modal-header.success {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.notification-modal-header.error {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.notification-modal-header.danger {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+.notification-modal-header.warning {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+}
+
+.notification-modal-header.info,
+.notification-modal-header.primary {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+}
+
+.notification-modal-header-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.notification-modal-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Modal Body */
+.notification-modal-body {
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+}
+
+.notification-modal-body-icon-wrapper {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+}
+
+/* FIXED: Warna icon body lebih solid */
+.notification-modal-body-icon-wrapper.success {
+  color: #059669;
+  background-color: #d1fae5;
+}
+
+.notification-modal-body-icon-wrapper.error {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.notification-modal-body-icon-wrapper.danger {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.notification-modal-body-icon-wrapper.warning {
+  color: #d97706;
+  background-color: #fef3c7;
+}
+
+.notification-modal-body-icon-wrapper.info,
+.notification-modal-body-icon-wrapper.primary {
+  color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.notification-modal-body-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.notification-modal-body-content {
+  flex: 1;
+}
+
+.notification-modal-message {
+  color: var(--primary-dark);
+  line-height: 1.6;
+  margin: 0;
+  font-size: 15px;
+  white-space: pre-line;
+}
+
+/* Modal Footer */
+.notification-modal-footer {
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .notification-modal-footer {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+}
+
+.notification-modal-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  min-width: 100px;
+}
+
+.notification-modal-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.notification-modal-button-cancel {
+  background-color: #e5e7eb;
+  color: var(--primary-dark);
+}
+
+.notification-modal-button-cancel:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+.notification-modal-button-alternate {
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: var(--primary-dark);
+}
+
+.notification-modal-button-alternate:hover:not(:disabled) {
+  background-color: #f9fafb;
+}
+
+.notification-modal-button-confirm {
+  color: white;
+}
+
+/* FIXED: Warna tombol lebih solid */
+.notification-modal-button-confirm.success {
+  background-color: #059669;
+}
+
+.notification-modal-button-confirm.success:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.notification-modal-button-confirm.error {
+  background-color: #dc2626;
+}
+
+.notification-modal-button-confirm.error:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.notification-modal-button-confirm.danger {
+  background-color: #dc2626;
+}
+
+.notification-modal-button-confirm.danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+.notification-modal-button-confirm.warning {
+  background-color: #d97706;
+}
+
+.notification-modal-button-confirm.warning:hover:not(:disabled) {
+  background-color: #b45309;
+}
+
+.notification-modal-button-confirm.info,
+.notification-modal-button-confirm.primary {
+  background-color: #2563eb;
+}
+
+.notification-modal-button-confirm.info:hover:not(:disabled),
+.notification-modal-button-confirm.primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+/* Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* Loading Modal */
+/* Loading Modal */
+.notification-loading-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.notification-loading-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.notification-loading-spinner {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  border: 4px solid #f3f4f6;
+  border-top-color: var(--primary-yellow);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ✅  Progress Bar */
+.notification-progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 16px 0 0 0;
+  position: relative;
+}
+
+.notification-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6b7280 0%, #4b5563 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.notification-loading-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0 0 8px 0;
+}
+
+.notification-loading-message {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-toast-container {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+  }
+
+  .notification-toast {
+    min-width: auto;
+    max-width: 100%;
+  }
+}
