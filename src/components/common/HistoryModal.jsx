@@ -6,12 +6,40 @@ import { useNotification } from "../common/Notification";
 export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSuperAdmin }) {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("confirmed");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
+
+  const [filterYear, setFilterYear] = useState(String(currentYear));
+  const [filterMonth, setFilterMonth] = useState(currentMonth);
+
+  const availableYears = [
+    { value: "all", label: "Semua Tahun" },
+    ...Array.from({ length: 5 }, (_, i) => ({
+      value: String(currentYear - i),
+      label: `Tahun ${currentYear - i}`,
+    })),
+  ];
+  const bulanOptions = [
+    { value: "all", label: "Semua Bulan" },
+    { value: "01", label: "Januari" },
+    { value: "02", label: "Februari" },
+    { value: "03", label: "Maret" },
+    { value: "04", label: "April" },
+    { value: "05", label: "Mei" },
+    { value: "06", label: "Juni" },
+    { value: "07", label: "Juli" },
+    { value: "08", label: "Agustus" },
+    { value: "09", label: "September" },
+    { value: "10", label: "Oktober" },
+    { value: "11", label: "November" },
+    { value: "12", label: "Desember" },
+  ];
 
   // State untuk edit mode
   const [editingId, setEditingId] = useState(null);
@@ -56,14 +84,22 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
         query = query.eq("user_id", profile.id);
       }
 
-      if (filter === "this_month") {
-        const currentMonth = new Date().toISOString().substring(0, 7);
-        query = query.like("tanggal", `${currentMonth}%`);
-      } else if (filter === "last_month") {
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        const lastMonthStr = lastMonth.toISOString().substring(0, 7);
-        query = query.like("tanggal", `${lastMonthStr}%`);
+      if (filterYear !== "all") {
+        if (filterMonth === "all") {
+          const startOfYear = `${filterYear}-01-01`;
+          const endOfYear = `${filterYear}-12-31`;
+          query = query.gte("tanggal", startOfYear).lte("tanggal", endOfYear);
+        } else {
+          const startOfMonth = `${filterYear}-${filterMonth}-01`;
+          let nextMonth = parseInt(filterMonth) + 1;
+          let nextYear = parseInt(filterYear);
+          if (nextMonth > 12) {
+            nextMonth = 1;
+            nextYear += 1;
+          }
+          const endOfMonth = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+          query = query.gte("tanggal", startOfMonth).lt("tanggal", endOfMonth);
+        }
       }
 
       // Sort
@@ -96,7 +132,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       loadHistory();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, filter, sortBy, profile?.id, isAdmin, activeTab]);
+  }, [isOpen, filterYear, filterMonth, sortBy, profile?.id, isAdmin, activeTab]);
 
   const handleStartEdit = (nomor) => {
     setEditingId(nomor.id);
@@ -365,13 +401,27 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
             <div className="flex items-center gap-2">
               <div className="grid grid-cols-2 gap-2 flex-1 md:flex md:flex-row md:gap-3">
                 <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-white"
+                  value={filterYear}
+                  onChange={(e) => setFilterYear(e.target.value)}
+                  className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
                 >
-                  <option value="all">Semua Periode</option>
-                  <option value="this_month">Bulan Ini</option>
-                  <option value="last_month">Bulan Lalu</option>
+                  {availableYears.map((year) => (
+                    <option key={year.value} value={year.value}>
+                      {year.label}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={filterMonth}
+                  onChange={(e) => setFilterMonth(e.target.value)}
+                  className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
+                >
+                  {bulanOptions.map((bulan) => (
+                    <option key={bulan.value} value={bulan.value}>
+                      {bulan.label}
+                    </option>
+                  ))}
                 </select>
 
                 <select
@@ -466,241 +516,171 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr style={{ backgroundColor: "#00325f" }} className="text-white text-sm">
-                      <th className="px-4 py-3 text-center font-semibold">No</th>
-                      <th className="px-4 py-3 text-center font-semibold">Nomor Lengkap</th>
-                      {activeTab === "emergency" && <th className="px-4 py-3 text-center font-semibold">Status</th>}
-                      <th className="px-4 py-3 text-center font-semibold">Data Nomor Surat</th>
+                    <tr style={{ backgroundColor: "#00325f" }} className="text-white text-[11px] md:text-xs">
+                      <th className="px-2 py-2 text-center font-semibold w-10">No</th>
+                      <th className="px-2 py-2 text-center font-semibold w-[180px]">Nomor Lengkap</th>
+                      {activeTab === "emergency" && (
+                        <th className="px-2 py-2 text-center font-semibold w-24">Status</th>
+                      )}
+                      <th className="px-2 py-2 text-center font-semibold">Data Nomor Surat</th>
                       {isAdmin && activeTab === "confirmed" && (
-                        <th className="px-4 py-3 text-center font-semibold">User</th>
+                        <th className="px-2 py-2 text-center font-semibold w-40">User</th>
                       )}
                       {activeTab === "emergency" && (
-                        <th className="px-4 py-3 text-center font-semibold">Diambil Oleh</th>
+                        <th className="px-2 py-2 text-center font-semibold w-40">Diambil Oleh</th>
                       )}
-                      <th className="px-4 py-3 text-center font-semibold">Tanggal</th>
-                      <th className="px-4 py-3 text-center font-semibold">
+                      <th className="px-2 py-2 text-center font-semibold w-28">Tanggal</th>
+                      <th className="px-2 py-2 text-center font-semibold w-36">
                         {activeTab === "confirmed" ? "Dikonfirmasi" : "Direserve"}
                       </th>
-                      {activeTab === "confirmed" && <th className="px-4 py-3 text-center font-semibold">Aksi</th>}
+                      {activeTab === "confirmed" && <th className="px-2 py-2 text-center font-semibold w-24">Aksi</th>}
                     </tr>
                   </thead>
                   <tbody>
                     {paginatedData.map((nomor, index) => (
                       <tr key={nomor.id} className="border-b hover:bg-gray-50 transition">
-                        <td className="px-4 py-3 text-sm text-gray-700">{startIndex + index + 1}</td>
+                        <td className="px-2 py-2 text-xs text-gray-700 text-center">{startIndex + index + 1}</td>
 
-                        <td className="px-4 py-3">
-                          <span className="font-mono font-semibold text-blue-700">{nomor.nomor_lengkap}</span>
-                          <div className="text-xs text-gray-500 mt-1">Nomor Urut: {nomor.nomor_urut}</div>
+                        <td className="px-4 py-2 text-left whitespace-nowrap">
+                          <span className="font-mono font-bold text-blue-700 text-sm">{nomor.nomor_lengkap}</span>
+                          <div className="text-[10px] text-gray-500">Nomor Urut: {nomor.nomor_urut}</div>
                         </td>
 
                         {/* Status (Emergency tab only) */}
                         {activeTab === "emergency" && (
-                          <td className="px-4 py-3 text-sm">
+                          <td className="px-2 py-2 text-center">
                             {nomor.status === "reserved" ? (
-                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">
-                                Belum Diambil
+                              <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-800 rounded text-[10px] font-bold">
+                                RESERVED
                               </span>
                             ) : nomor.status === "confirmed" ? (
-                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
-                                Sudah Diambil
+                              <span className="px-1.5 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold">
+                                CONFIRMED
                               </span>
                             ) : (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-semibold">
-                                {nomor.status}
+                              <span className="px-1.5 py-0.5 bg-gray-100 text-gray-800 rounded text-[10px] font-bold">
+                                {nomor.status.toUpperCase()}
                               </span>
                             )}
                           </td>
                         )}
 
                         {/* KOLOM DATA NOMOR SURAT - DENGAN EDIT MODE (hanya di tab confirmed) */}
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-2">
                           {activeTab === "confirmed" && editingId === nomor.id ? (
                             // MODE EDIT (hanya di tab confirmed)
-                            <div className="space-y-3 bg-blue-50 p-4 rounded-lg border-2 border-blue-300">
-                              <div className="grid grid-cols-2 gap-3">
-                                {/* Kode Kanwil */}
+                            <div className="space-y-3 bg-blue-50 p-3 rounded-lg border-2 border-blue-300">
+                              <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Kode Kanwil <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={editingData.kodeKanwil}
-                                    onChange={(e) => handleEditInputChange("kodeKanwil", e.target.value.toUpperCase())}
-                                    className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase ${
-                                      editErrors.kodeKanwil ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                    placeholder="WIM.2"
-                                    disabled={isUpdating}
-                                  />
-                                  {editErrors.kodeKanwil && (
-                                    <p className="text-xs text-red-600 mt-1">{editErrors.kodeKanwil}</p>
-                                  )}
+                                  <label className="block text-[10px] font-bold text-gray-700 mb-0.5">Kanwil/UPT</label>
+                                  <div className="flex gap-1">
+                                    <input
+                                      type="text"
+                                      value={editingData.kodeKanwil}
+                                      onChange={(e) =>
+                                        handleEditInputChange("kodeKanwil", e.target.value.toUpperCase())
+                                      }
+                                      className="w-full px-1.5 py-1 border rounded text-xs"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={editingData.kodeUPT}
+                                      onChange={(e) => handleEditInputChange("kodeUPT", e.target.value.toUpperCase())}
+                                      className="w-full px-1.5 py-1 border rounded text-xs"
+                                    />
+                                  </div>
                                 </div>
-
-                                {/* Kode UPT */}
                                 <div>
-                                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Kode UPT <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={editingData.kodeUPT}
-                                    onChange={(e) => handleEditInputChange("kodeUPT", e.target.value.toUpperCase())}
-                                    className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase ${
-                                      editErrors.kodeUPT ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                    placeholder="IMI.4"
-                                    disabled={isUpdating}
-                                  />
-                                  {editErrors.kodeUPT && (
-                                    <p className="text-xs text-red-600 mt-1">{editErrors.kodeUPT}</p>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-3 gap-3">
-                                {/* Kode Masalah */}
-                                <div>
-                                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Kode Masalah <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    maxLength="2"
-                                    value={editingData.kodeMasalah}
-                                    onChange={(e) => {
-                                      const value = e.target.value.replace(/[^A-Za-z]/g, "").toUpperCase();
-                                      handleEditInputChange("kodeMasalah", value);
-                                    }}
-                                    className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase ${
-                                      editErrors.kodeMasalah ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                    placeholder="UM"
-                                    disabled={isUpdating}
-                                  />
-                                  {editErrors.kodeMasalah && (
-                                    <p className="text-xs text-red-600 mt-1">{editErrors.kodeMasalah}</p>
-                                  )}
-                                </div>
-
-                                {/* Sub Masalah 1 */}
-                                <div>
-                                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Sub 1 <span className="text-red-500">*</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    maxLength="2"
-                                    value={editingData.subMasalah1}
-                                    onChange={(e) => {
-                                      const value = e.target.value.replace(/\D/g, "");
-                                      handleEditInputChange("subMasalah1", value);
-                                    }}
-                                    className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                      editErrors.subMasalah1 ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                    placeholder="01"
-                                    disabled={isUpdating}
-                                  />
-                                  {editErrors.subMasalah1 && (
-                                    <p className="text-xs text-red-600 mt-1">{editErrors.subMasalah1}</p>
-                                  )}
-                                </div>
-
-                                {/* Sub Masalah 2 */}
-                                <div>
-                                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Sub 2 <span className="text-gray-400">(opsional)</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    maxLength="2"
-                                    value={editingData.subMasalah2}
-                                    onChange={(e) => {
-                                      const value = e.target.value.replace(/\D/g, "");
-                                      handleEditInputChange("subMasalah2", value);
-                                    }}
-                                    className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                      editErrors.subMasalah2 ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                    placeholder="01"
-                                    disabled={isUpdating}
-                                  />
-                                  {editErrors.subMasalah2 && (
-                                    <p className="text-xs text-red-600 mt-1">{editErrors.subMasalah2}</p>
-                                  )}
+                                  <label className="block text-[10px] font-bold text-gray-700 mb-0.5">Kode/Sub</label>
+                                  <div className="flex gap-1">
+                                    <input
+                                      type="text"
+                                      maxLength="2"
+                                      value={editingData.kodeMasalah}
+                                      onChange={(e) =>
+                                        handleEditInputChange("kodeMasalah", e.target.value.toUpperCase())
+                                      }
+                                      className="w-10 px-1.5 py-1 border rounded text-xs"
+                                    />
+                                    <input
+                                      type="text"
+                                      maxLength="2"
+                                      value={editingData.subMasalah1}
+                                      onChange={(e) => handleEditInputChange("subMasalah1", e.target.value)}
+                                      className="w-10 px-1.5 py-1 border rounded text-xs"
+                                    />
+                                    <input
+                                      type="text"
+                                      maxLength="2"
+                                      value={editingData.subMasalah2}
+                                      onChange={(e) => handleEditInputChange("subMasalah2", e.target.value)}
+                                      className="w-10 px-1.5 py-1 border rounded text-xs"
+                                    />
+                                  </div>
                                 </div>
                               </div>
-
-                              {/* Keterangan */}
                               <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                  Keterangan <span className="text-red-500">*</span>
-                                </label>
                                 <textarea
                                   value={editingData.keterangan}
                                   onChange={(e) => handleEditInputChange("keterangan", e.target.value)}
-                                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    editErrors.keterangan ? "border-red-500" : "border-gray-300"
-                                  }`}
-                                  rows="2"
-                                  placeholder="Masukkan keterangan..."
-                                  disabled={isUpdating}
+                                  className="w-full px-2 py-1 border rounded text-xs"
+                                  rows="1"
                                 />
-                                {editErrors.keterangan && (
-                                  <p className="text-xs text-red-600 mt-1">{editErrors.keterangan}</p>
-                                )}
                               </div>
-
-                              {/* Tombol Save & Cancel */}
-                              <div className="flex gap-2 pt-2">
+                              <div className="flex gap-1">
                                 <button
                                   onClick={() => handleSaveEdit(nomor.id)}
-                                  disabled={isUpdating}
-                                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition disabled:opacity-50"
+                                  className="flex-1 py-1 bg-green-600 text-white rounded text-xs font-bold"
                                 >
-                                  {isUpdating ? "Menyimpan..." : "Simpan Perubahan"}
+                                  Simpan
                                 </button>
                                 <button
                                   onClick={handleCancelEdit}
-                                  disabled={isUpdating}
-                                  className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold hover:bg-gray-500 transition disabled:opacity-50"
+                                  className="py-1 px-3 bg-gray-400 text-white rounded text-xs font-bold"
                                 >
                                   Batal
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            // MODE NORMAL (semua tab)
-                            <div className="text-sm">
-                              <div className="grid grid-cols-2 gap-2 mb-2 p-2 bg-gray-50 rounded">
-                                <div>
-                                  <span className="text-xs text-gray-500">Kanwil:</span>
-                                  <span className="ml-1 font-semibold text-gray-700">{nomor.kode_kanwil}</span>
-                                </div>
-                                <div>
-                                  <span className="text-xs text-gray-500">UPT:</span>
-                                  <span className="ml-1 font-semibold text-gray-700">{nomor.kode_upt}</span>
-                                </div>
-                                <div>
-                                  <span className="text-xs text-gray-500">Masalah:</span>
-                                  <span className="ml-1 font-semibold text-gray-700">{nomor.kode_masalah}</span>
-                                </div>
-                                <div>
-                                  <span className="text-xs text-gray-500">Sub:</span>
-                                  <span className="ml-1 font-semibold text-gray-700">
+                            // MODE NORMAL (semua tab) - COMPACT LIST
+                            <div className={`flex flex-col gap-1.5 ${!isAdmin ? "items-center" : ""}`}>
+                              <div
+                                className={`flex items-center text-[10px] uppercase ${
+                                  !isAdmin ? "flex-wrap justify-center gap-x-4" : "flex-nowrap gap-x-2"
+                                }`}
+                              >
+                                <span className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                                  <b className="text-gray-400 mr-1 font-medium">KNWL:</b>
+                                  <span className="text-blue-700 font-bold">{nomor.kode_kanwil}</span>
+                                </span>
+                                <span className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                                  <b className="text-gray-400 mr-1 font-medium">UPT:</b>
+                                  <span className="text-blue-700 font-bold">{nomor.kode_upt}</span>
+                                </span>
+                                <span className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                                  <b className="text-gray-400 mr-1 font-medium">MSLH:</b>
+                                  <span className="text-blue-700 font-bold">{nomor.kode_masalah}</span>
+                                </span>
+                                <span className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                                  <b className="text-gray-400 mr-1 font-medium">SUB:</b>
+                                  <span className="text-blue-700 font-bold">
                                     {nomor.kode_submasalah1}
                                     {nomor.kode_submasalah2 && `.${nomor.kode_submasalah2}`}
                                   </span>
-                                </div>
+                                </span>
                               </div>
-                              <div className="pt-2 border-t">
-                                <span className="text-xs text-gray-500">Keterangan:</span>
-                                <div className="mt-1 text-gray-700">
-                                  {nomor.keterangan || <span className="text-gray-400 italic">-</span>}
-                                </div>
+                              <div
+                                className={`text-xs text-gray-700 leading-tight bg-blue-50/30 p-1.5 rounded border border-blue-100/50 w-full max-w-2xl ${
+                                  !isAdmin ? "text-center" : ""
+                                }`}
+                              >
+                                <span className="text-[10px] text-gray-400 mr-1.5 font-bold italic uppercase tracking-wider">
+                                  Keterangan:
+                                </span>
+                                <span className="font-medium">
+                                  {nomor.keterangan || <span className="text-gray-300 italic">-</span>}
+                                </span>
                               </div>
                             </div>
                           )}
@@ -708,30 +688,32 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
                         {/* User (Confirmed tab only) */}
                         {isAdmin && activeTab === "confirmed" && (
-                          <td className="px-4 py-3 text-sm">
-                            <div className="font-semibold text-gray-900">{nomor.users?.nama_lengkap || "Unknown"}</div>
-                            <div className="text-xs text-gray-500">{nomor.users?.seksi || "-"}</div>
+                          <td className="px-4 py-2 text-left">
+                            <div className="font-bold text-gray-900 text-xs leading-tight">
+                              {nomor.users?.nama_lengkap || "Unknown"}
+                            </div>
+                            <div className="text-[10px] text-gray-500">{nomor.users?.seksi || "-"}</div>
                           </td>
                         )}
 
                         {/* Diambil Oleh (Emergency tab only) */}
                         {activeTab === "emergency" && (
-                          <td className="px-4 py-3 text-sm">
+                          <td className="px-4 py-2 text-left whitespace-nowrap">
                             {nomor.user_id ? (
                               <div>
-                                <div className="font-semibold text-gray-900">
+                                <div className="font-bold text-gray-900 text-xs leading-tight">
                                   {nomor.users?.nama_lengkap || "Unknown"}
                                 </div>
-                                <div className="text-xs text-gray-500">{nomor.users?.seksi || "-"}</div>
+                                <div className="text-[10px] text-gray-500">{nomor.users?.seksi || "-"}</div>
                               </div>
                             ) : (
-                              <span className="text-gray-400 italic text-xs">Belum diambil</span>
+                              <span className="text-gray-300 italic text-[10px]">Belum diambil</span>
                             )}
                           </td>
                         )}
 
                         {/* Tanggal */}
-                        <td className="px-4 py-3 text-sm text-gray-700">
+                        <td className="px-2 py-2 text-[11px] text-gray-700 text-center whitespace-nowrap">
                           {new Date(nomor.tanggal).toLocaleDateString("id-ID", {
                             day: "2-digit",
                             month: "short",
@@ -740,7 +722,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                         </td>
 
                         {/* Dikonfirmasi / Direserve */}
-                        <td className="px-4 py-3 text-sm text-gray-700">
+                        <td className="px-2 py-2 text-[11px] text-gray-700 text-center whitespace-nowrap leading-tight">
                           {activeTab === "confirmed"
                             ? nomor.confirmed_at
                               ? new Date(nomor.confirmed_at).toLocaleString("id-ID", {
@@ -764,15 +746,15 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
                         {/* KOLOM AKSI - TOMBOL EDIT & DELETE (hanya di tab confirmed) */}
                         {activeTab === "confirmed" && (
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-2 py-2 text-center whitespace-nowrap">
                             {editingId === nomor.id ? (
-                              <span className="text-xs text-gray-400 italic">Editing...</span>
+                              <span className="text-[10px] text-gray-400 italic">Editing...</span>
                             ) : (
-                              <div className="flex gap-2 justify-center">
+                              <div className="flex gap-1.5 justify-center">
                                 <button
                                   onClick={() => handleStartEdit(nomor)}
                                   disabled={editingId !== null || isUpdating}
-                                  className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold hover:bg-blue-700 transition disabled:opacity-50"
                                 >
                                   Edit
                                 </button>
@@ -780,7 +762,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                   <button
                                     onClick={() => handleDeleteNomor(nomor)}
                                     disabled={editingId !== null || isUpdating}
-                                    className="px-3 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-2 py-0.5 bg-red-600 text-white rounded text-[10px] font-bold hover:bg-red-700 transition disabled:opacity-50"
                                   >
                                     Hapus
                                   </button>
