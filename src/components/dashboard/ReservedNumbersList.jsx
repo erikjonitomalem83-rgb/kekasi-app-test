@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import CountdownTimer from "../common/CountdownTimer";
 
 export default function ReservedNumbersList({
@@ -11,6 +11,23 @@ export default function ReservedNumbersList({
   onCancelNomor,
   onKeteranganChange,
 }) {
+  const headerRef = useRef(null);
+  const prevCount = useRef(0);
+
+  useEffect(() => {
+    const currentCount = reservedNumbers?.length || 0;
+    // Scroll hanya jika bertambah (bukan saat awal load yang sudah ada, atau saat berkurang/batal)
+    // Dan hanya di mobile/tablet (lg:col-span-6 adalah 1024px di Tailwind)
+    if (currentCount > prevCount.current && window.innerWidth < 1024) {
+      // Kecil delay untuk memastikan DOM sudah dirender jika ada transisi
+      const timer = setTimeout(() => {
+        headerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    prevCount.current = currentCount;
+  }, [reservedNumbers]);
+
   if (!reservedNumbers) {
     return (
       <div className="lg:col-span-6 bg-white bg-opacity-50 p-6 rounded-xl shadow-md border-2 border-dashed border-gray-300">
@@ -37,7 +54,7 @@ export default function ReservedNumbersList({
 
   return (
     <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <h3 style={{ color: "#00325f" }} className="text-lg font-bold mb-3">
+      <h3 ref={headerRef} style={{ color: "#00325f" }} className="text-lg font-bold mb-3 scroll-mt-20">
         Nomor yang Dipesan:
       </h3>
 

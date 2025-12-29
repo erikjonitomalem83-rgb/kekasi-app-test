@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase";
-import { updateKeteranganNomor, updateNomorSuratData, deleteNomorSurat } from "../../services/nomorSuratService";
+import { updateNomorSuratData, deleteNomorSurat } from "../../services/nomorSuratService";
 import { useNotification } from "../common/Notification";
 
 export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSuperAdmin }) {
@@ -13,7 +13,6 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   // State untuk edit mode
   const [editingId, setEditingId] = useState(null);
-  const [editingKeterangan, setEditingKeterangan] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
   // State untuk edit data lengkap
@@ -98,7 +97,6 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   const handleStartEdit = (nomor) => {
     setEditingId(nomor.id);
-    setEditingKeterangan(nomor.keterangan || "");
 
     // Set data lengkap untuk edit
     setEditingData({
@@ -114,7 +112,6 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditingKeterangan("");
     setEditingData({
       kodeKanwil: "",
       kodeUPT: "",

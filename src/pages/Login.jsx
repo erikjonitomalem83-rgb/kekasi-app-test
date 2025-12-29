@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 import { useNotification } from "../components/common/Notification";
 import ForgotPasswordModal from "../components/common/ForgotPasswordModal";
-import { detectBrowser, getBrowserMessage } from "../utils/browserDetection";
 import LogoKekasi from "../assets/images/Logo_KEKASI.svg";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 
@@ -52,19 +51,6 @@ export default function Login() {
 
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    const browser = detectBrowser();
-    if (browser.blocked) {
-      const message = getBrowserMessage();
-
-      // Show blocking alert
-      alert(`⛔ ${message.title}\n\n${message.message}\n\nAnda akan diarahkan ke halaman download Chrome.`);
-
-      // Redirect to Chrome download
-      window.location.href = "https://www.google.com/chrome/";
-    }
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-kekasi-blue-600 via-kekasi-blue-500 to-kekasi-blue-400 relative overflow-hidden">

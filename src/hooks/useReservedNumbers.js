@@ -127,7 +127,7 @@ export function useReservedNumbers(profile, isAdmin) {
     const confirmed = await notification.confirmAction({
       type: "warning",
       title: "Konfirmasi Pemesanan",
-      message: `Anda akan memesan ${formData.jumlahNomor} nomor surat.\n\nSebelum pesanan nomor diberikan, pastikan Anda memang membutuhkan nomor surat ini.\n\nLanjutkan pemesanan?`,
+      message: `Anda akan memesan \n ${formData.jumlahNomor} nomor surat.`,
       confirmText: "Ya, Lanjutkan",
       cancelText: "Batal",
     });

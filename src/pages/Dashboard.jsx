@@ -30,7 +30,6 @@ import ConfirmationResumeModal from "../components/common/ConfirmationResumeModa
 import { logout as authLogout } from "../services/authService";
 import { cleanupOnLogout } from "../services/lockService";
 import { cancelNomorSurat } from "../services/nomorSuratService";
-import { detectBrowser, getBrowserMessage } from "../utils/browserDetection";
 import { supabase } from "../services/supabase";
 
 export default function Dashboard() {
@@ -154,18 +153,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (profile?.password === "Password123!") setShowPasswordWarning(true);
   }, [profile]);
-
-  useEffect(() => {
-    const browser = detectBrowser();
-    if (browser.blocked) {
-      const message = getBrowserMessage();
-      notification.showErrorToast(message.title, message.message + "\n\nAnda akan di-logout dalam 5 detik.");
-      setTimeout(async () => {
-        await handleLogout(true);
-        window.location.href = "https://www.google.com/chrome/";
-      }, 5000);
-    }
-  }, [notification, handleLogout]);
 
   useEffect(() => {
     if (isAdmin) {

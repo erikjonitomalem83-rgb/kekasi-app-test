@@ -82,7 +82,7 @@ export default function ProfileModal({ isOpen, onClose, profile, user, isAdmin }
       <ChangePasswordModal
         isOpen={showChangePassword}
         onClose={() => setShowChangePassword(false)}
-        onSuccess={(message) => {
+        onSuccess={() => {
           setShowChangePassword(false);
           onClose();
         }}

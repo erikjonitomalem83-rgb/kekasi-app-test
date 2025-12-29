@@ -2,7 +2,7 @@ import { useState } from "react";
 import { supabase } from "../../services/supabase";
 import { supabaseAdmin } from "../../services/supabaseAdmin";
 
-export default function CreateUserModal({ isOpen, onClose, onSuccess, isAdmin, isSuperAdmin }) {
+export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdmin }) {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -100,7 +100,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isAdmin, i
 
     try {
       // Cek apakah email sudah ada
-      const { data: existingEmail, error: emailCheckError } = await supabase
+      const { data: existingEmail } = await supabase
         .from("users")
         .select("email")
         .eq("email", formData.email.toLowerCase())
@@ -113,7 +113,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isAdmin, i
       }
 
       // Cek apakah username sudah ada
-      const { data: existingUsername, error: usernameCheckError } = await supabase
+      const { data: existingUsername } = await supabase
         .from("users")
         .select("username")
         .eq("username", formData.username.toLowerCase())

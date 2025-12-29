@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../services/supabase";
 import { generateRekapHarian, generateRekapBulanan, generateRekapTahunan } from "../../services/excelExportService";
 
-export default function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
+export default function RekapModal({ isOpen, onClose, notification, isAdmin }) {
   const [loading, setLoading] = useState(false);
   const [jenisRekap, setJenisRekap] = useState("harian");
 
@@ -52,10 +52,10 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin, use
       setPreviewData([]);
       setTotalData(0);
     }
-  }, [isOpen]);
+  }, [isOpen, currentDate, currentMonth, currentYear, loadUserList]);
 
   // Load user list
-  const loadUserList = async () => {
+  const loadUserList = useCallback(async () => {
     if (!isAdmin) return;
 
     try {
@@ -66,10 +66,10 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin, use
     } catch (error) {
       console.error("Error load user list:", error);
     }
-  };
+  }, [isAdmin]);
 
   // Load preview data
-  const loadPreviewData = async () => {
+  const loadPreviewData = useCallback(async () => {
     setLoading(true);
     try {
       let query = supabase.from("nomor_surat").select(
@@ -165,45 +165,23 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin, use
     } finally {
       setLoading(false);
     }
-  };
-
-  // Reload preview saat filter berubah (dengan debounce)
-  useEffect(() => {
-    if (!isOpen) return;
-
-    // Validasi filter sebelum load
-    if (jenisRekap === "harian" && (!filterTanggal || filterTanggal.trim() === "")) {
-      console.warn("[useEffect] filterTanggal is empty, skipping loadPreviewData");
-      return;
-    }
-
-    if (jenisRekap === "bulanan" && (!filterBulan || filterBulan.trim() === "")) {
-      console.warn("[useEffect] filterBulan is empty, skipping loadPreviewData");
-      return;
-    }
-
-    if (!filterTahun || filterTahun.trim() === "") {
-      console.warn("[useEffect] filterTahun is empty, skipping loadPreviewData");
-      return;
-    }
-
-    // Debounce: tunggu 300ms sebelum load data
-    const timer = setTimeout(() => {
-      loadPreviewData();
-    }, 300);
-
-    return () => clearTimeout(timer);
   }, [
-    isOpen,
     jenisRekap,
-    filterTahun,
-    filterBulan,
     filterTanggal,
+    filterBulan,
+    filterTahun,
     filterStatusConfirmed,
     filterStatusReserved,
     filterStatusCancelled,
+    isAdmin,
     filterUser,
+    notification,
   ]);
+  // Reload preview saat filter berubah
+  useEffect(() => {
+    if (!isOpen) return;
+    loadPreviewData();
+  }, [isOpen, loadPreviewData]);
 
   // Handle export
   const handleExport = async () => {
@@ -541,52 +519,69 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin, use
                 <p className="text-sm text-gray-600">Tidak ada data sesuai filter</p>
               </div>
             ) : (
-              <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-100 border-b border-gray-200">
-                    <tr>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">No</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">Nomor Urut</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">Kode Surat</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">Tanggal</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">Keterangan</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">User</th>
-                      <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {previewData.map((nomor, index) => (
-                      <tr key={nomor.id} className="border-b border-gray-200 hover:bg-gray-50">
-                        <td className="px-3 py-2 text-gray-700">{index + 1}</td>
-                        <td className="px-3 py-2 font-bold text-gray-800">{nomor.nomor_urut}</td>
-                        <td className="px-3 py-2 text-gray-700">{nomor.nomor_lengkap}</td>
-                        <td className="px-3 py-2 text-gray-600">
-                          {new Date(nomor.tanggal).toLocaleDateString("id-ID", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="px-3 py-2 text-gray-700 max-w-xs truncate">{nomor.keterangan || "-"}</td>
-                        <td className="px-3 py-2 text-gray-700">{nomor.user_nama}</td>
-                        <td className="px-3 py-2">
-                          <span
-                            className={`inline-block px-2 py-1 text-xs rounded-full font-semibold ${
-                              nomor.status === "confirmed"
-                                ? "bg-green-100 text-green-700"
-                                : nomor.status === "reserved"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                          >
-                            {nomor.status.toUpperCase()}
-                          </span>
-                        </td>
+              <>
+                {/* Desktop View: Table */}
+                <div className="hidden md:block overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100 border-b border-gray-200">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-semibold text-gray-700 text-center w-16">No</th>
+                        <th className="px-3 py-2 text-left font-semibold text-gray-700">Kode Surat</th>
+                        <th className="px-3 py-2 text-left font-semibold text-gray-700">Keterangan</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {previewData.map((nomor, index) => (
+                        <tr key={nomor.id} className="border-b border-gray-200 hover:bg-gray-50">
+                          <td className="px-3 py-2 text-gray-700 text-center">{index + 1}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-blue-700 truncate max-w-[200px]">
+                            {nomor.nomor_lengkap}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 italic">
+                            {nomor.keterangan || <span className="text-gray-400 font-normal">-</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile View: Card List */}
+                <div className="md:hidden space-y-3">
+                  {previewData.map((nomor, index) => (
+                    <div
+                      key={nomor.id}
+                      className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-blue-300 transition-colors"
+                    >
+                      {/* Card Header: sequence */}
+                      <div className="px-3 py-2 bg-gray-50 border-b flex justify-between items-center">
+                        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                          #{index + 1}
+                        </span>
+                      </div>
+
+                      <div className="p-3">
+                        {/* Full Number */}
+                        <div className="mb-2">
+                          <div className="font-mono font-bold text-sm text-blue-700 break-all leading-tight bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+                            {nomor.nomor_lengkap}
+                          </div>
+                        </div>
+
+                        {/* Keterangan */}
+                        <div className="mb-0">
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter block mb-0.5">
+                            Keterangan
+                          </span>
+                          <p className="text-xs text-gray-700 leading-normal italic line-clamp-2">
+                            {nomor.keterangan || <span className="text-gray-300 italic">Tidak ada keterangan</span>}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
             {previewData.length > 0 && totalData > 10 && (

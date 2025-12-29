@@ -23,7 +23,7 @@ export function detectBrowser() {
 
   // Check Firefox
   if (userAgent.includes("firefox") || userAgent.includes("fxios")) {
-    return { name: "Firefox", blocked: true };
+    return { name: "Firefox", blocked: false };
   }
 
   // Pure Safari check
@@ -33,14 +33,14 @@ export function detectBrowser() {
     !userAgent.includes("crios") &&
     !userAgent.includes("edg")
   ) {
-    return { name: "Safari", blocked: true };
+    return { name: "Safari", blocked: false };
   }
 
   if (userAgent.includes("opera") || userAgent.includes("opr")) {
-    return { name: "Opera", blocked: true };
+    return { name: "Opera", blocked: false };
   }
 
-  return { name: "Unknown", blocked: true };
+  return { name: "Unknown", blocked: false };
 }
 
 /**
