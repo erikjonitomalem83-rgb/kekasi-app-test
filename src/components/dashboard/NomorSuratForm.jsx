@@ -184,6 +184,12 @@ const NomorSuratForm = ({
                   let value = e.target.value.replace(/\D/g, "");
                   onInputChange(key, value);
                 }}
+                onBlur={(e) => {
+                  let value = e.target.value;
+                  if (value.length === 1) {
+                    onInputChange(key, `0${value}`);
+                  }
+                }}
                 placeholder={placeholder}
                 disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
               />
