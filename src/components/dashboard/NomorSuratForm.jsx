@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const NomorSuratForm = ({
   formData,
@@ -12,6 +12,21 @@ const NomorSuratForm = ({
   onShowNomorLama,
   onReset,
 }) => {
+  const [showMasalahDropdown, setShowMasalahDropdown] = useState(false);
+  const masalahRef = useRef(null);
+  const problems = ["UM", "GR", "SA", "TI"];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (masalahRef.current && !masalahRef.current.contains(event.target)) {
+        setShowMasalahDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="lg:col-span-6 bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200 lg:ml-2">
       <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold mb-3">
@@ -87,8 +102,66 @@ const NomorSuratForm = ({
         </div>
 
         <div className="grid grid-cols-3 gap-2 md:gap-4">
+          <div className="relative" ref={masalahRef}>
+            <label className="block text-[10px] md:text-sm font-semibold text-gray-700 mb-1">
+              Masalah <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <input
+                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base pr-8
+                  focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
+                  ${formErrors.kodeMasalah ? "border-red-500" : ""}`}
+                maxLength="2"
+                value={formData.kodeMasalah}
+                autoComplete="off"
+                onFocus={() => setShowMasalahDropdown(true)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^A-Za-z]/g, "").toUpperCase();
+                  onInputChange("kodeMasalah", value);
+                  setShowMasalahDropdown(true);
+                }}
+                placeholder="UM"
+                disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-0 h-full px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                onClick={() => setShowMasalahDropdown(!showMasalahDropdown)}
+                disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${showMasalahDropdown ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            {showMasalahDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                {problems.map((prob) => (
+                  <button
+                    key={prob}
+                    type="button"
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors uppercase font-medium"
+                    onClick={() => {
+                      onInputChange("kodeMasalah", prob);
+                      setShowMasalahDropdown(false);
+                    }}
+                  >
+                    {prob}
+                  </button>
+                ))}
+              </div>
+            )}
+            {formErrors.kodeMasalah && (
+              <p className="text-[10px] text-red-600 mt-1 leading-tight">{formErrors.kodeMasalah}</p>
+            )}
+          </div>
+
           {[
-            { key: "kodeMasalah", label: "Masalah", placeholder: "UM" },
             { key: "subMasalah1", label: "Sub 1", placeholder: "01" },
             {
               key: "subMasalah2",
@@ -108,12 +181,7 @@ const NomorSuratForm = ({
                 maxLength="2"
                 value={formData[key]}
                 onChange={(e) => {
-                  let value = e.target.value;
-                  if (key === "kodeMasalah") {
-                    value = value.replace(/[^A-Za-z]/g, "").toUpperCase();
-                  } else {
-                    value = value.replace(/\D/g, "");
-                  }
+                  let value = e.target.value.replace(/\D/g, "");
                   onInputChange(key, value);
                 }}
                 placeholder={placeholder}
