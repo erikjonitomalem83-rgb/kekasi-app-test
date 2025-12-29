@@ -423,7 +423,9 @@ export default function Dashboard() {
       <CreateUserModal
         isOpen={showCreateUserModal}
         onClose={() => setShowCreateUserModal(false)}
-        isAdmin={isAdmin}
+        onSuccess={(result) => {
+          notification.showSuccessToast("Berhasil", result.message);
+        }}
         isSuperAdmin={profile?.role === "superadmin"}
       />
       <ProfileModal

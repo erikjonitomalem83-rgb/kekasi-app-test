@@ -28,13 +28,6 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   const notification = useNotification();
 
-  useEffect(() => {
-    if (isOpen) {
-      loadHistory();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, filter, sortBy, profile?.id, isAdmin, activeTab]);
-
   const loadHistory = async () => {
     setLoading(true);
 
@@ -94,6 +87,13 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadHistory();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, filter, sortBy, profile?.id, isAdmin, activeTab]);
 
   const handleStartEdit = (nomor) => {
     setEditingId(nomor.id);

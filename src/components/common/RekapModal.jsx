@@ -41,19 +41,6 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin }) {
     { value: "12", label: "Desember" },
   ];
 
-  // Initialize
-  useEffect(() => {
-    if (isOpen) {
-      setFilterTahun(String(currentYear));
-      setFilterBulan(currentMonth);
-      setFilterTanggal(currentDate);
-      loadUserList();
-    } else {
-      setPreviewData([]);
-      setTotalData(0);
-    }
-  }, [isOpen, currentDate, currentMonth, currentYear, loadUserList]);
-
   // Load user list
   const loadUserList = useCallback(async () => {
     if (!isAdmin) return;
@@ -177,6 +164,20 @@ export default function RekapModal({ isOpen, onClose, notification, isAdmin }) {
     filterUser,
     notification,
   ]);
+
+  // Initialize
+  useEffect(() => {
+    if (isOpen) {
+      setFilterTahun(String(currentYear));
+      setFilterBulan(currentMonth);
+      setFilterTanggal(currentDate);
+      loadUserList();
+    } else {
+      setPreviewData([]);
+      setTotalData(0);
+    }
+  }, [isOpen, currentDate, currentMonth, currentYear, loadUserList]);
+
   // Reload preview saat filter berubah
   useEffect(() => {
     if (!isOpen) return;
