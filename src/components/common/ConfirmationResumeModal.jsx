@@ -174,8 +174,9 @@ export default function ConfirmationResumeModal({ isOpen, onClose, confirmedNumb
               </p>
             </div>
             <button
+              type="button"
               onClick={onClose}
-              className="p-1 md:p-0 text-white hover:text-gray-200 transition bg-green-500/20 md:bg-transparent rounded-lg"
+              className="p-2 text-white hover:text-gray-200 transition bg-green-500/20 hover:bg-green-500/30 rounded-full"
             >
               <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />

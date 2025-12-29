@@ -372,7 +372,7 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
                 .single();
 
               if (!insertError) {
-                resultData.push(data);
+                resultData.push({ ...data, is_reused: true });
               }
             }
           } catch (err) {
@@ -416,7 +416,9 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
         if (batchInsertError) {
           console.error(`[reserveNomorBerurutan] Batch insert error:`, batchInsertError);
         } else {
-          resultData.push(...batchInsertResult);
+          // Tandai sebagai reused
+          const markedAsReused = batchInsertResult.map((n) => ({ ...n, is_reused: true }));
+          resultData.push(...markedAsReused);
           console.log(`[reserveNomorBerurutan] Batch reused ${batchInsertResult.length} nomor successfully`);
         }
       }
@@ -575,7 +577,7 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
           if (error && error.code !== "23505") throw error;
 
           if (!error) {
-            resultData.push(data);
+            resultData.push({ ...data, is_reused: true });
             console.log(`[reserveNomorAcak] Reused nomor ${nomor.nomor_urut}`);
           }
         } catch (err) {

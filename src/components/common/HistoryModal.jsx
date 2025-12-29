@@ -10,6 +10,8 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("confirmed");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // State untuk edit mode
   const [editingId, setEditingId] = useState(null);
@@ -30,6 +32,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   const loadHistory = async () => {
     setLoading(true);
+    setCurrentPage(1); // Reset page on refresh/filter
 
     try {
       let query = supabase.from("nomor_surat").select(
@@ -278,6 +281,11 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
     );
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+
   if (!isOpen) return null;
 
   return (
@@ -300,7 +308,11 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                 : "Nomor emergency admin (terpakai/belum)"}
             </p>
           </div>
-          <button onClick={onClose} className="p-1 text-white hover:text-gray-300 transition shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 text-white hover:text-gray-300 transition shrink-0 hover:bg-white/10 rounded-full"
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -473,9 +485,9 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredData.map((nomor, index) => (
+                    {paginatedData.map((nomor, index) => (
                       <tr key={nomor.id} className="border-b hover:bg-gray-50 transition">
-                        <td className="px-4 py-3 text-sm text-gray-700">{index + 1}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{startIndex + index + 1}</td>
 
                         <td className="px-4 py-3">
                           <span className="font-mono font-semibold text-blue-700">{nomor.nomor_lengkap}</span>
@@ -785,14 +797,16 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
               {/* Mobile View: Card List */}
               <div className="md:hidden space-y-3">
-                {filteredData.map((nomor, index) => (
+                {paginatedData.map((nomor, index) => (
                   <div
                     key={nomor.id}
                     className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-blue-300 transition-colors"
                   >
                     {/* Card Header: sequence and date */}
                     <div className="px-3 py-2 bg-gray-50 border-b flex justify-between items-center">
-                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">#{index + 1}</span>
+                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                        #{startIndex + index + 1}
+                      </span>
                       <span className="text-[10px] text-gray-400 font-medium">
                         {new Date(nomor.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "long" })}
                       </span>
@@ -1007,6 +1021,62 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                   </div>
                 ))}
               </div>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                  <p className="text-sm text-gray-600 font-medium text-left w-full md:w-auto">
+                    Halaman <span className="text-blue-600 font-bold">{currentPage}</span> dari{" "}
+                    <span className="text-gray-900 font-bold">{totalPages}</span>
+                  </p>
+                  <div className="flex items-center gap-1.5 w-full md:w-auto justify-center">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1 || loading}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      Prev
+                    </button>
+
+                    <div className="flex items-center -space-x-px">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) pageNum = i + 1;
+                        else if (currentPage <= 3) pageNum = i + 1;
+                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                        else pageNum = currentPage - 2 + i;
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-9 h-9 flex items-center justify-center text-sm font-bold transition-all ${
+                              currentPage === pageNum
+                                ? "bg-blue-600 text-white z-10 border border-blue-600 shadow-md transform scale-110 rounded-lg"
+                                : "bg-white text-gray-600 border border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages || loading}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
+                    >
+                      Next
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
