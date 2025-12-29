@@ -275,7 +275,7 @@ const NomorSuratForm = ({
           <button
             type="button"
             onClick={onReset}
-            disabled={isSubmitting}
+            disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
             className="w-full sm:flex-1 bg-gray-200 text-gray-800 font-semibold py-2.5 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 text-sm"
           >
             Reset Form

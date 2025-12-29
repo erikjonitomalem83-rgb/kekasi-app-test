@@ -26,7 +26,7 @@ export default function ReservedNumbersList({
       return () => clearTimeout(timer);
     }
     prevCount.current = currentCount;
-  }, [reservedNumbers]);
+  }, [reservedNumbers?.length]);
 
   if (!reservedNumbers) {
     return (
@@ -68,7 +68,7 @@ export default function ReservedNumbersList({
             </span>
             <CountdownTimer
               expiredAt={reservedNumbers[0].expired_at}
-              onExpired={() => onNomorExpired(reservedNumbers[0].id)}
+              onExpired={() => onNomorExpired(reservedNumbers.map((n) => n.id))}
             />
           </div>
         )}

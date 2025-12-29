@@ -321,14 +321,24 @@ export function useReservedNumbers(profile, isAdmin) {
     }
   };
 
-  const handleNomorExpired = (nomorId) => {
-    setExpiredIds((prev) => new Set([...prev, nomorId]));
+  const handleNomorExpired = (ids) => {
+    const idArray = Array.isArray(ids) ? ids : [ids];
+
+    setExpiredIds((prev) => {
+      const next = new Set(prev);
+      idArray.forEach((id) => next.add(id));
+      return next;
+    });
+
     setTimeout(() => {
       setReservedNumbers((prev) => {
         if (!prev) return null;
-        const updated = prev.filter((n) => n.id !== nomorId);
+        const updated = prev.filter((n) => !idArray.includes(n.id));
         return updated.length > 0 ? updated : null;
       });
+
+      // Panggil cleanup di server agar status jadi cancelled di DB
+      serviceCleanExpiredNomor();
     }, 2000);
   };
 

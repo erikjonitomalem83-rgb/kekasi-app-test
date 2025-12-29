@@ -1,1 +1,19 @@
-<svg id="_0" data-name="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92.25 96.38"><defs><style>.cls-1{fill:#efbc62;}.cls-2{fill:#00325f;}</style></defs><g id="REGION"><path class="cls-1" d="M30.36,20.54v1.69L2.06,49.73V0H9.82A20.55,20.55,0,0,1,30.36,20.54Z" transform="translate(-2.06)"/></g><g id="REGION-2" data-name="REGION"><path class="cls-1" d="M91.93,94.33a3,3,0,0,1-2.86,2H54.6a9.66,9.66,0,0,1-9.19-7.21l-15-56s0,0,0,0L91.17,91.41A2.9,2.9,0,0,1,91.93,94.33Z" transform="translate(-2.06)"/></g><g id="REGION-3" data-name="REGION"><path class="cls-2" d="M93.44,16.67l-29.82,29a10.44,10.44,0,0,1-13.17,1.14L30.36,33.08V76.84A19.54,19.54,0,0,1,10.82,96.38H2.06V55.57L41.34,17.4a20.13,20.13,0,0,1,14-5.69H91.43a2.89,2.89,0,0,1,2,5Z" transform="translate(-2.06)"/></g></svg>
+<svg id="_0" data-name="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92.25 96.38">
+  <defs>
+    <style>.cls-1{fill:#efbc62;}.cls-2{fill:#00325f;}</style>
+  </defs>
+  <!-- Background for maskable icon -->
+  <rect width="92.25" height="96.38" fill="white" />
+  <!-- Scaled content (75%) centered -->
+  <g transform="translate(11.53, 12.05) scale(0.75)">
+    <g id="REGION">
+      <path class="cls-1" d="M30.36,20.54v1.69L2.06,49.73V0H9.82A20.55,20.55,0,0,1,30.36,20.54Z" transform="translate(-2.06)"/>
+    </g>
+    <g id="REGION-2" data-name="REGION">
+      <path class="cls-1" d="M91.93,94.33a3,3,0,0,1-2.86,2H54.6a9.66,9.66,0,0,1-9.19-7.21l-15-56s0,0,0,0L91.17,91.41A2.9,2.9,0,0,1,91.93,94.33Z" transform="translate(-2.06)"/>
+    </g>
+    <g id="REGION-3" data-name="REGION">
+      <path class="cls-2" d="M93.44,16.67l-29.82,29 a10.44,10.44,0,0,1-13.17,1.14L30.36,33.08V76.84A19.54,19.54,0,0,1,10.82,96.38H2.06V55.57L41.34,17.4a20.13,20.13,0,0,1,14-5.69H91.43a2.89,2.89,0,0,1,2,5Z" transform="translate(-2.06)"/>
+    </g>
+  </g>
+</svg>
