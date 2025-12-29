@@ -54,9 +54,25 @@ export default function ReservedNumbersList({
 
   return (
     <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <h3 ref={headerRef} style={{ color: "#00325f" }} className="text-lg font-bold mb-3 scroll-mt-20">
-        Nomor yang Dipesan:
-      </h3>
+      <div
+        className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm -mx-6 px-6 py-4 -mt-6 mb-4 rounded-t-xl border-b border-gray-100 flex items-center justify-between shadow-sm"
+        ref={headerRef}
+      >
+        <h3 style={{ color: "#00325f" }} className="text-lg font-bold">
+          Nomor yang Dipesan:
+        </h3>
+        {reservedNumbers.length > 0 && (
+          <div className="flex items-center gap-2 bg-blue-50/50 px-2 py-1 rounded-lg border border-blue-100">
+            <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider hidden md:block">
+              Batas Waktu:
+            </span>
+            <CountdownTimer
+              expiredAt={reservedNumbers[0].expired_at}
+              onExpired={() => onNomorExpired(reservedNumbers[0].id)}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="mb-4 flex flex-row justify-center gap-2">
         <button
@@ -97,15 +113,10 @@ export default function ReservedNumbersList({
               {/* Mobile Card View */}
               <div className="block md:hidden space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 shadow-sm leading-none h-7">
-                      <span className="text-xs font-black text-blue-700">#{sequenceNum}</span>
-                      <div className="w-px h-3 bg-blue-200"></div>
-                      <span className="text-xs font-black text-gray-900">ID: {angkaAkhir}</span>
-                    </div>
-                    <div>
-                      <CountdownTimer expiredAt={nomor.expired_at} onExpired={() => onNomorExpired(nomor.id)} />
-                    </div>
+                  <div className="flex items-center gap-1 w-24 bg-blue-50 px-2 py-1.5 rounded-lg border border-blue-200 shadow-sm leading-none">
+                    <span className="text-sm font-black text-blue-700">#{sequenceNum}</span>
+                    <div className="w-px h-4 bg-blue-200 mx-1"></div>
+                    <span className="text-sm font-black text-gray-900 ml-auto">{angkaAkhir}</span>
                   </div>
                   <button
                     type="button"
@@ -131,13 +142,10 @@ export default function ReservedNumbersList({
 
               {/* Desktop Row View */}
               <div className="hidden md:flex items-center gap-4">
-                <div className="relative">
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-lg border-2 border-blue-200 shadow-sm whitespace-nowrap z-10 h-6">
-                    <span className="text-[11px] font-black text-blue-700 leading-none">#{sequenceNum}</span>
-                    <div className="w-px h-2.5 bg-blue-300"></div>
-                    <span className="text-[11px] font-black text-gray-900 leading-none">ID: {angkaAkhir}</span>
-                  </div>
-                  <CountdownTimer expiredAt={nomor.expired_at} onExpired={() => onNomorExpired(nomor.id)} />
+                <div className="flex items-center gap-1 w-24 bg-blue-50 px-2 py-2 rounded-lg border border-blue-200 shadow-sm leading-none">
+                  <span className="text-sm font-black text-blue-700">#{sequenceNum}</span>
+                  <div className="w-px h-4 bg-blue-200 mx-1"></div>
+                  <span className="text-sm font-black text-gray-900 ml-auto">{angkaAkhir}</span>
                 </div>
 
                 <div className="flex-1">

@@ -80,7 +80,7 @@ export default function CountdownTimer({ expiredAt, onExpired }) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border font-mono text-xs font-bold transition-all duration-200 ${getColorClass()} ${
+      className={`inline-flex items-center justify-center gap-1.5 w-20 px-2 py-0.5 rounded-lg border font-mono text-xs font-bold transition-all duration-200 ${getColorClass()} ${
         isFlashing ? "scale-105 shadow-md" : ""
       }`}
     >
