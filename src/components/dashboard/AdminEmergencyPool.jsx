@@ -14,7 +14,7 @@ export default function AdminEmergencyPool({
   return (
     <>
       {/* Edge Function Status */}
-      <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
+      <div className="mb-4 bg-blue-50 border-y md:border border-blue-200 rounded-none md:rounded-lg p-3 md:p-4">
         <h3 className="text-xs md:text-sm font-bold mb-2 text-blue-900">Status Edge Function (Auto Reserve Pool)</h3>
         {edgeFunctionLogs[0] ? (
           <div className="space-y-2">
@@ -81,7 +81,7 @@ export default function AdminEmergencyPool({
       </div>
 
       {/* ADMIN EMERGENCY POOL INFO */}
-      <div className="mb-6 bg-purple-50 border-2 border-purple-300 rounded-lg p-3 md:p-6">
+      <div className="mb-6 bg-purple-50 border-y-2 md:border-2 border-purple-300 rounded-none md:rounded-lg p-3 md:p-6">
         <h3 className="text-sm md:text-lg font-bold mb-2" style={{ color: "#00325f" }}>
           Nomor Emergency Bulan Ini ({new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })})
         </h3>

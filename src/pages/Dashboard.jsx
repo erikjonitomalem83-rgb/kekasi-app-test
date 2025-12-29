@@ -342,9 +342,9 @@ export default function Dashboard() {
         onLogout={handleLogout}
       />
 
-      <main className="container mx-auto px-4 md:px-6 py-4">
+      <main className="container mx-auto px-0 md:px-6 py-4">
         {showPasswordWarning && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg flex items-center justify-between">
+          <div className="bg-yellow-50 border-y md:border-l-4 border-yellow-400 p-4 mb-6 rounded-none md:rounded-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-xl">⚠️</span>
               <p className="text-sm text-yellow-700 font-medium">
@@ -360,16 +360,16 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-2 md:gap-4 mb-3 md:mb-6">
-          <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm border border-green-100 text-center">
+        <div className="grid grid-cols-3 gap-0.5 md:gap-4 mb-3 md:mb-6">
+          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-green-100 text-center">
             <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Status</p>
             <p className="text-[12px] md:text-sm font-bold text-green-600">Aktif</p>
           </div>
-          <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm border border-blue-100 text-center">
+          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-blue-100 text-center">
             <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Role</p>
             <p className="text-[12px] md:text-sm font-bold text-blue-600">{profile?.role}</p>
           </div>
-          <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm border border-indigo-100 text-center">
+          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-indigo-100 text-center">
             <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Seksi</p>
             <p className="text-[10px] md:text-xs font-bold text-indigo-600 capitalize break-words">{profile?.seksi}</p>
           </div>
@@ -385,7 +385,7 @@ export default function Dashboard() {
           onGeneratePoolManual={onGeneratePoolManual}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 md:gap-10 items-start">
           <NomorSuratForm
             formData={formData}
             formErrors={formErrors}

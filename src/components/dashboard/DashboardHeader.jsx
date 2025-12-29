@@ -19,8 +19,8 @@ export default function DashboardHeader({
     <header
       className="bg-transparent shadow-lg"
       style={{
-        borderBottomLeftRadius: "20px",
-        borderBottomRightRadius: "20px",
+        borderBottomLeftRadius: window.innerWidth < 768 ? "0px" : "20px",
+        borderBottomRightRadius: window.innerWidth < 768 ? "0px" : "20px",
       }}
     >
       <div className="container mx-auto px-4 md:px-6 py-2 flex justify-between items-center">

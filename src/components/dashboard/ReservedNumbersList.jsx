@@ -53,12 +53,12 @@ export default function ReservedNumbersList({
   }
 
   return (
-    <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-md border border-gray-200">
+    <div className="lg:col-span-6 bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200">
       <div
-        className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm -mx-6 px-6 py-4 -mt-6 mb-4 rounded-t-xl border-b border-gray-100 flex items-center justify-between shadow-sm"
+        className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-2 -mt-4 md:-mt-6 mb-3 md:rounded-t-xl border-b border-gray-100 flex items-center justify-between shadow-sm"
         ref={headerRef}
       >
-        <h3 style={{ color: "#00325f" }} className="text-lg font-bold">
+        <h3 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold">
           Nomor yang Dipesan:
         </h3>
         {reservedNumbers.length > 0 && (
