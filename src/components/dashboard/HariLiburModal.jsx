@@ -687,10 +687,10 @@ export default function HariLiburModal({ isOpen, onClose, notification }) {
             <table className="w-full">
               <thead className="bg-gray-50 text-gray-600 text-xs font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="px-6 py-3 text-left">No</th>
-                  <th className="px-6 py-3 text-left">Tanggal</th>
-                  <th className="px-6 py-3 text-left">Nama Hari Libur</th>
-                  <th className="px-6 py-3 text-left">Jenis</th>
+                  <th className="px-6 py-3 text-center">No</th>
+                  <th className="px-6 py-3 text-center">Tanggal</th>
+                  <th className="px-6 py-3 text-center">Nama Hari Libur</th>
+                  <th className="px-6 py-3 text-center">Jenis</th>
                   <th className="px-6 py-3 text-center">Aksi</th>
                 </tr>
               </thead>
