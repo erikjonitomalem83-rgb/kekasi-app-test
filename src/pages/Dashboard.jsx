@@ -370,29 +370,27 @@ export default function Dashboard() {
   useIdleTimer(30 * 60 * 1000, 2 * 60 * 1000, handleIdleWarning, handleAutoLogout, reservedNumbers?.length > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {isAdmin && (
-        <Sidebar
-          isAdmin={isAdmin}
-          isSuperAdmin={profile?.role === "superadmin"}
-          isSubmitting={isSubmitting}
-          onShowRekap={() => setShowRekapModal(true)}
-          onShowHistory={() => setShowHistoryModal(true)}
-          onShowCreateUser={() => setShowCreateUserModal(true)}
-          onShowUserList={() => setShowUserListModal(true)}
-          onShowHoliday={() => setShowHariLiburModal(true)}
-          onCleanExpired={cleanExpired}
-          onShowProfile={() => setShowProfileModal(true)}
-          // Emergency Pool
-          adminPool={adminPool}
-          adminPoolSchedule={adminPoolSchedule}
-          edgeFunctionLogs={edgeFunctionLogs}
-          onAmbilEmergency={handleAmbilEmergency}
-          onGeneratePoolManual={onGeneratePoolManual}
-        />
-      )}
+    <div className="h-screen bg-gray-50 flex flex-col md:flex-row overflow-hidden">
+      <Sidebar
+        isAdmin={isAdmin}
+        isSuperAdmin={profile?.role === "superadmin"}
+        isSubmitting={isSubmitting}
+        onShowRekap={() => setShowRekapModal(true)}
+        onShowHistory={() => setShowHistoryModal(true)}
+        onShowCreateUser={() => setShowCreateUserModal(true)}
+        onShowUserList={() => setShowUserListModal(true)}
+        onShowHoliday={() => setShowHariLiburModal(true)}
+        onCleanExpired={cleanExpired}
+        onShowProfile={() => setShowProfileModal(true)}
+        // Emergency Pool
+        adminPool={adminPool}
+        adminPoolSchedule={adminPoolSchedule}
+        edgeFunctionLogs={edgeFunctionLogs}
+        onAmbilEmergency={handleAmbilEmergency}
+        onGeneratePoolManual={onGeneratePoolManual}
+      />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto">
         <DashboardHeader
           profile={profile}
           isAdmin={isAdmin}
@@ -406,7 +404,7 @@ export default function Dashboard() {
           onCleanExpired={cleanExpired}
           onShowProfile={() => setShowProfileModal(true)}
           onLogout={handleLogout}
-          hideActions={isAdmin}
+          hideActions={true}
         />
 
         <main className="container mx-auto px-0 md:px-6 py-4 flex-1">
@@ -427,7 +425,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-2xl mx-auto">
             <NomorSuratForm
               formData={formData}
               formErrors={formErrors}

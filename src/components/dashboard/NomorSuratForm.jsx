@@ -14,7 +14,7 @@ const NomorSuratForm = ({
 }) => {
   const [showMasalahDropdown, setShowMasalahDropdown] = useState(false);
   const masalahRef = useRef(null);
-  const problems = ["UM", "GR", "SA", "TI"];
+  const problems = ["UM", "GR", "SA", "TI", "KU"];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,7 +28,7 @@ const NomorSuratForm = ({
   }, []);
 
   return (
-    <div className="lg:col-span-6 bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200 lg:ml-2">
+    <div className="bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200">
       <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold mb-3">
         Pesan Nomor Surat
       </h2>

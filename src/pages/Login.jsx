@@ -65,20 +65,20 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <div className="card-elevated max-w-md w-full relative z-10 animate-slide-up">
+      <div className="p-8 sm:p-12 mx-4 max-w-[420px] w-full relative z-10 animate-slide-up">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-0">
-            <img src={LogoKekasi} alt="Logo KEKASI" className="h-16 w-auto" />
+            <img src={LogoKekasi} alt="Logo KEKASI" className="h-14 sm:h-16 w-auto" />
           </div>
 
           {/* <p className="text-sm text-gray-600 font-medium">Kantor Imigrasi Kelas II TPI Pematang Siantar</p> */}
-          <div className="mt-4 h-1 w-20 bg-gradient-to-r from-kekasi-yellow-500 to-kekasi-yellow-400 rounded-full mx-auto"></div>
+          <div className="mt-4 h-1.5 w-16 bg-gradient-to-r from-kekasi-yellow-500 to-kekasi-yellow-400 rounded-full mx-auto"></div>
         </div>
 
         {/* Error Message */}
         {errorMsg && (
-          <div className="bg-error-50 border-2 border-error-200 text-error-700 px-4 py-3 rounded-xl mb-6 animate-fade-in">
+          <div className="bg-error-50 border-2 border-error-200 text-error-700 px-4 py-3 rounded-2xl mb-6 animate-fade-in shadow-sm">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -93,10 +93,10 @@ export default function Login() {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Username Field */}
           <div>
-            <label className="input-label flex items-center gap-2 mb-1">
+            <label className="input-label flex items-center gap-2 mb-2">
               <User className="w-4 h-4 text-kekasi-blue-500" />
               Username
             </label>
@@ -106,7 +106,7 @@ export default function Login() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="input-field !normal-case"
+                className="input-field !normal-case bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40 transition-all duration-200 py-3 rounded-xl"
                 placeholder="Masukkan username"
                 required
                 disabled={isLoading}
@@ -116,7 +116,7 @@ export default function Login() {
 
           {/* Password Field */}
           <div>
-            <label className="input-label flex items-center gap-2 mb-1">
+            <label className="input-label flex items-center gap-2 mb-2">
               <Lock className="w-4 h-4 text-kekasi-blue-500" />
               Password
             </label>
@@ -126,7 +126,7 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="input-field !normal-case pr-12"
+                className="input-field !normal-case pr-12 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40 transition-all duration-200 py-3 rounded-xl"
                 placeholder="Masukkan password"
                 required
                 disabled={isLoading}
@@ -145,7 +145,7 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full btn-primary py-3.5 text-base font-bold shadow-kekasi-glow"
+            className="w-full btn-primary py-4 text-base font-bold shadow-kekasi-glow rounded-xl hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -166,7 +166,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowForgotPassword(true)}
-              className="text-sm text-kekasi-blue-600 hover:text-kekasi-blue-700 font-semibold transition-colors hover:underline"
+              className="text-sm text-kekasi-yellow-400 hover:text-kekasi-yellow-300 font-semibold transition-colors hover:underline"
               disabled={isLoading}
             >
               Lupa Password?
@@ -175,8 +175,8 @@ export default function Login() {
         </form>
 
         {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-xs text-center text-gray-500">© 2026 Kantor Imigrasi Kelas II TPI Pematang Siantar</p>
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <p className="text-xs text-center text-white/60">© 2026 Kantor Imigrasi Kelas II TPI Pematang Siantar</p>
         </div>
       </div>
 

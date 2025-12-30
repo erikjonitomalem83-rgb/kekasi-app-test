@@ -100,7 +100,7 @@ export default function Sidebar({
             <img src={LogoK} alt="Logo" className="w-10 h-10" />
             <div>
               <h1 className="font-bold text-gray-800 text-lg">KEKASI</h1>
-              <p className="text-[10px] text-gray-500 leading-tight">Navigasi Admin</p>
+              <p className="text-[10px] text-gray-500 leading-tight">Menu Navigasi</p>
             </div>
           </div>
 

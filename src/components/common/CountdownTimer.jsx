@@ -2,7 +2,7 @@ import { useCountdown } from "../../hooks/useCountdown";
 import { useEffect, useRef, useState } from "react";
 import { playAlertSound, playTenSecondSound, playThreeSecondSound, vibrateAlert } from "../../utils/soundAlert";
 
-export default function CountdownTimer({ expiredAt, onExpired }) {
+export default function CountdownTimer({ expiredAt, onExpired, size = "md" }) {
   const { minutes, seconds, isExpired } = useCountdown(expiredAt);
   const hasPlayed1Min = useRef(false);
   const hasPlayed30Sec = useRef(false);
@@ -78,21 +78,28 @@ export default function CountdownTimer({ expiredAt, onExpired }) {
   // Format angka dengan leading zero
   const pad = (num) => String(num).padStart(2, "0");
 
+  const sizeClasses = {
+    sm: "px-2 py-0.5 border text-sm",
+    md: "px-3 py-1 border-2 text-lg",
+  };
+
+  const emojiSize = size === "sm" ? "text-base" : "text-lg";
+
   return (
     <div
-      className={`inline-flex items-center justify-center gap-1.5 w-20 px-2 py-0.5 rounded-lg border font-mono text-xs font-bold transition-all duration-200 ${getColorClass()} ${
-        isFlashing ? "scale-105 shadow-md" : ""
-      }`}
+      className={`inline-flex items-center justify-center gap-2 w-max rounded-xl font-mono font-bold transition-all duration-200 ${
+        sizeClasses[size] || sizeClasses.md
+      } ${getColorClass()} ${isFlashing ? "scale-105 shadow-lg" : ""}`}
     >
       {isExpired ? (
         <>
-          <span className="text-base">⏰</span>
-          <span>EXPIRED</span>
+          <span className={emojiSize}>⏰</span>
+          <span className="tracking-tighter">EXPIRED</span>
         </>
       ) : (
         <>
-          <span className="text-base">⏱️</span>
-          <span>
+          <span className={`${emojiSize} animate-pulse`}>⏱️</span>
+          <span className="tabular-nums">
             {pad(minutes)}:{pad(seconds)}
           </span>
         </>

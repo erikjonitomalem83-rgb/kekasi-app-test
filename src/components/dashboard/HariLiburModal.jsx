@@ -331,7 +331,7 @@ export default function HariLiburModal({ isOpen, onClose, notification }) {
             <div className="bg-white p-4 rounded-xl border border-red-100 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-red-500 uppercase tracking-wider">Libur Nasional</p>
-                <h3 className="text-3xl font-black text-gray-800 mt-1">{stats.nasional}</h3>
+                <h3 className="text-3xl font-bold text-gray-800 mt-1">{stats.nasional}</h3>
               </div>
               <div className="p-3 bg-red-50 text-red-500 rounded-xl">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +347,7 @@ export default function HariLiburModal({ isOpen, onClose, notification }) {
             <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider">Cuti Bersama</p>
-                <h3 className="text-3xl font-black text-gray-800 mt-1">{stats.cuti}</h3>
+                <h3 className="text-3xl font-bold text-gray-800 mt-1">{stats.cuti}</h3>
               </div>
               <div className="p-3 bg-blue-50 text-blue-500 rounded-xl">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,7 +363,7 @@ export default function HariLiburModal({ isOpen, onClose, notification }) {
             <div className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Total Hari Libur</p>
-                <h3 className="text-3xl font-black text-gray-800 mt-1">{stats.total}</h3>
+                <h3 className="text-3xl font-bold text-gray-800 mt-1">{stats.total}</h3>
               </div>
               <div className="p-3 bg-amber-50 text-amber-500 rounded-xl">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -725,7 +725,7 @@ export default function HariLiburModal({ isOpen, onClose, notification }) {
                       <td className="px-6 py-4 text-sm text-gray-700 font-medium">{h.nama_libur}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 text-[10px] font-black rounded-lg uppercase tracking-tight ${
+                          className={`px-2 py-1 text-[10px] font-bold rounded-lg uppercase tracking-tight ${
                             h.jenis === "libur_nasional"
                               ? "bg-red-50 text-red-600 border border-red-100"
                               : "bg-blue-50 text-blue-600 border border-blue-100"

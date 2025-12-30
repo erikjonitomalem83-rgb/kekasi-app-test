@@ -48,7 +48,7 @@ export default function DashboardHeader({
           </div>
         ) : (
           <div className="flex items-center">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-tight">
               Kantor Imigrasi Kelas II TPI Pematang Siantar
             </p>
           </div>

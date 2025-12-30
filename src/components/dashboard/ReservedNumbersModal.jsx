@@ -18,14 +18,14 @@ export default function ReservedNumbersModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[70] p-4 animate-fadeIn">
       <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
-          <h2 className="text-xl font-bold" style={{ color: "#00325f" }}>
+        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
+          <h2 className="text-sm sm:text-lg font-bold" style={{ color: "#00325f" }}>
             Konfirmasi Pesanan Nomor
           </h2>
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-              {reservedNumbers.length} Nomor Dipesan
+          <div className="flex items-center gap-1.5">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+              {reservedNumbers.length} Nomor
             </span>
           </div>
         </div>
