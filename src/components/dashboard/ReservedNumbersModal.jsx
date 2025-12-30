@@ -10,13 +10,13 @@ export default function ReservedNumbersModal({
   onBatalkanSemua,
   onNomorExpired,
   onCancelNomor,
-  onKeteranganChange,
+  onItemDataChange,
 }) {
   if (!isOpen || !reservedNumbers || reservedNumbers.length === 0) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[70] p-4 animate-fadeIn">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
           <h2 className="text-xl font-bold" style={{ color: "#00325f" }}>
@@ -41,7 +41,7 @@ export default function ReservedNumbersModal({
               onBatalkanSemua={onBatalkanSemua}
               onNomorExpired={onNomorExpired}
               onCancelNomor={onCancelNomor}
-              onKeteranganChange={onKeteranganChange}
+              onItemDataChange={onItemDataChange}
               isModalView={true}
             />
           </div>

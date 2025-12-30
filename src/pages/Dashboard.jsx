@@ -232,8 +232,47 @@ export default function Dashboard() {
     }
   };
 
-  const onKeteranganChange = (id, value) => {
-    setReservedNumbers((prev) => prev.map((n) => (n.id === id ? { ...n, keterangan: value } : n)));
+  const onItemDataChange = (id, field, value) => {
+    setReservedNumbers((prev) =>
+      prev.map((n) => {
+        if (n.id !== id) return n;
+
+        let processedValue = value;
+        if (field === "kode_masalah") {
+          processedValue = value.toUpperCase();
+        } else if (field === "kode_submasalah1" || field === "kode_submasalah2") {
+          const digits = value.replace(/\D/g, "");
+          if (digits.length === 0) {
+            processedValue = "";
+          } else if (digits.length === 1) {
+            processedValue = "0" + digits;
+          } else {
+            processedValue = digits.slice(-2);
+          }
+        }
+
+        const updated = { ...n, [field]: processedValue };
+
+        // Recalculate nomor_lengkap if codes change
+        if (field.startsWith("kode_")) {
+          const pad = (v) => (v && v.length === 1 ? "0" + v : v || "00");
+          const ks1 = pad(updated.kode_submasalah1);
+          const ks2 = pad(updated.kode_submasalah2);
+          const km = (updated.kode_masalah || "UM").toUpperCase();
+
+          const cleanSub2 = ks2.toString().trim();
+          const baseNomor =
+            cleanSub2 !== "00" && cleanSub2 !== ""
+              ? `${updated.kode_kanwil}.${updated.kode_upt}-${km}.${ks1}.${cleanSub2}-${updated.nomor_urut}`
+              : `${
+                  updated.kode_upt !== "" ? updated.kode_kanwil + "." + updated.kode_upt : updated.kode_kanwil
+                }-${km}.${ks1}-${updated.nomor_urut}`;
+
+          updated.nomor_lengkap = baseNomor.toUpperCase();
+        }
+        return updated;
+      })
+    );
   };
 
   const handleAmbilEmergency = async () => {
@@ -415,7 +454,7 @@ export default function Dashboard() {
         onBatalkanSemua={cancelAll}
         onNomorExpired={handleNomorExpired}
         onCancelNomor={onCancelNomor}
-        onKeteranganChange={onKeteranganChange}
+        onItemDataChange={onItemDataChange}
       />
       <HistoryModal
         isOpen={showHistoryModal}

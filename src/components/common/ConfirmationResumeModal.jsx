@@ -161,7 +161,7 @@ export default function ConfirmationResumeModal({ isOpen, onClose, confirmedNumb
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 px-5 md:px-6 py-3 md:py-4 rounded-t-xl flex-shrink-0">
           <div className="flex justify-between items-center">
@@ -198,7 +198,9 @@ export default function ConfirmationResumeModal({ isOpen, onClose, confirmedNumb
                   <th className="bg-green-600 text-white px-4 py-3 font-semibold text-sm w-16 text-center rounded-tl-lg">
                     No
                   </th>
-                  <th className="bg-green-600 text-white text-center px-4 py-3 font-semibold text-sm">Nomor Surat</th>
+                  <th className="bg-green-600 text-white text-center px-6 py-3 font-semibold text-sm whitespace-nowrap w-[300px]">
+                    Nomor Surat
+                  </th>
                   <th className="bg-green-600 text-white text-center px-4 py-3 font-semibold text-sm rounded-tr-lg">
                     Keterangan
                   </th>
@@ -215,7 +217,7 @@ export default function ConfirmationResumeModal({ isOpen, onClose, confirmedNumb
                     <td className="px-4 py-3 text-center text-gray-700 font-medium">{index + 1}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-mono font-semibold text-gray-900 text-sm">
+                        <span className="font-mono font-bold text-gray-900 text-sm whitespace-nowrap tracking-tight">
                           {formatNomorLengkap(nomor)}
                         </span>
                         <button

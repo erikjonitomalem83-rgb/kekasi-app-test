@@ -254,7 +254,16 @@ export function useReservedNumbers(profile, isAdmin) {
 
     setIsSubmitting(true);
     try {
-      const promises = reservedNumbers.map((nomor) => confirmNomorSurat(nomor.id, nomor.keterangan));
+      const promises = reservedNumbers.map((nomor) => {
+        const { keterangan, kode_masalah, kode_submasalah1, kode_submasalah2, nomor_lengkap } = nomor;
+        return confirmNomorSurat(nomor.id, {
+          keterangan,
+          kode_masalah,
+          kode_submasalah1,
+          kode_submasalah2,
+          nomor_lengkap,
+        });
+      });
       await Promise.all(promises);
       setConfirmedNumbersData([...reservedNumbers]);
       notification.showSuccessToast("Konfirmasi Berhasil", "Semua nomor berhasil dikonfirmasi!");

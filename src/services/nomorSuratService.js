@@ -685,13 +685,13 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
 /**
  * Konfirmasi nomor surat
  */
-export async function confirmNomorSurat(nomorId, keterangan) {
+export async function confirmNomorSurat(nomorId, updateData) {
   try {
     const { data, error } = await supabase
       .from("nomor_surat")
       .update({
         status: "confirmed",
-        keterangan: keterangan,
+        ...updateData,
         confirmed_at: new Date().toISOString(),
       })
       .eq("id", nomorId)
