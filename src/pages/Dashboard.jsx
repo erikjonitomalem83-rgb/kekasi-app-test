@@ -16,6 +16,7 @@ import AdminEmergencyPool from "../components/dashboard/AdminEmergencyPool";
 import NomorSuratForm from "../components/dashboard/NomorSuratForm";
 import ReservedNumbersList from "../components/dashboard/ReservedNumbersList";
 import HariLiburModal from "../components/dashboard/HariLiburModal";
+import Sidebar from "../layout/Sidebar";
 
 // Modals
 import CreateUserModal from "../components/common/CreateUserModal";
@@ -329,91 +330,107 @@ export default function Dashboard() {
   useIdleTimer(30 * 60 * 1000, 2 * 60 * 1000, handleIdleWarning, handleAutoLogout, reservedNumbers?.length > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 -mt-8">
-      <DashboardHeader
-        profile={profile}
-        isAdmin={isAdmin}
-        isSuperAdmin={profile?.role === "superadmin"}
-        isSubmitting={isSubmitting}
-        onShowRekap={() => setShowRekapModal(true)}
-        onShowHistory={() => setShowHistoryModal(true)}
-        onShowCreateUser={() => setShowCreateUserModal(true)}
-        onShowUserList={() => setShowUserListModal(true)}
-        onShowHoliday={() => setShowHariLiburModal(true)}
-        onCleanExpired={cleanExpired}
-        onShowProfile={() => setShowProfileModal(true)}
-        onLogout={handleLogout}
-      />
-
-      <main className="container mx-auto px-0 md:px-6 py-4">
-        {showPasswordWarning && (
-          <div className="bg-yellow-50 border-y md:border-l-4 border-yellow-400 p-4 mb-6 rounded-none md:rounded-lg flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">⚠️</span>
-              <p className="text-sm text-yellow-700 font-medium">
-                Password default terdeteksi! Segera ganti password Anda.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowChangePassword(true)}
-              className="px-4 py-2 bg-yellow-600 text-white rounded-lg font-bold text-sm"
-            >
-              Ganti
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-3 gap-0.5 md:gap-4 mb-3 md:mb-6">
-          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-green-100 text-center">
-            <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Status</p>
-            <p className="text-[12px] md:text-sm font-bold text-green-600">Aktif</p>
-          </div>
-          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-blue-100 text-center">
-            <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Role</p>
-            <p className="text-[12px] md:text-sm font-bold text-blue-600">{profile?.role}</p>
-          </div>
-          <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-indigo-100 text-center">
-            <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Seksi</p>
-            <p className="text-[10px] md:text-xs font-bold text-indigo-600 capitalize break-words">{profile?.seksi}</p>
-          </div>
-        </div>
-
-        <AdminEmergencyPool
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {isAdmin && (
+        <Sidebar
           isAdmin={isAdmin}
+          isSuperAdmin={profile?.role === "superadmin"}
+          isSubmitting={isSubmitting}
+          onShowRekap={() => setShowRekapModal(true)}
+          onShowHistory={() => setShowHistoryModal(true)}
+          onShowCreateUser={() => setShowCreateUserModal(true)}
+          onShowUserList={() => setShowUserListModal(true)}
+          onShowHoliday={() => setShowHariLiburModal(true)}
+          onCleanExpired={cleanExpired}
+          onShowProfile={() => setShowProfileModal(true)}
+          // Emergency Pool
           adminPool={adminPool}
           adminPoolSchedule={adminPoolSchedule}
           edgeFunctionLogs={edgeFunctionLogs}
-          isSubmitting={isSubmitting}
           onAmbilEmergency={handleAmbilEmergency}
           onGeneratePoolManual={onGeneratePoolManual}
         />
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 md:gap-10 items-start">
-          <NomorSuratForm
-            formData={formData}
-            formErrors={formErrors}
-            isSubmitting={isSubmitting}
-            reservedNumbers={reservedNumbers}
-            lockStatus={lockStatus}
-            profile={profile}
-            onInputChange={handleInputChange}
-            onSubmit={handleSubmit}
-            onShowNomorLama={() => setShowNomorLamaModal(true)}
-            onReset={handleReset}
-          />
+      <div className="flex-1 flex flex-col min-w-0">
+        <DashboardHeader
+          profile={profile}
+          isAdmin={isAdmin}
+          isSuperAdmin={profile?.role === "superadmin"}
+          isSubmitting={isSubmitting}
+          onShowRekap={() => setShowRekapModal(true)}
+          onShowHistory={() => setShowHistoryModal(true)}
+          onShowCreateUser={() => setShowCreateUserModal(true)}
+          onShowUserList={() => setShowUserListModal(true)}
+          onShowHoliday={() => setShowHariLiburModal(true)}
+          onCleanExpired={cleanExpired}
+          onShowProfile={() => setShowProfileModal(true)}
+          onLogout={handleLogout}
+          hideActions={isAdmin}
+        />
 
-          <ReservedNumbersList
-            reservedNumbers={reservedNumbers}
-            expiredIds={expiredIds}
-            isSubmitting={isSubmitting}
-            onKonfirmasiSemua={onConfirmAll}
-            onBatalkanSemua={cancelAll}
-            onNomorExpired={handleNomorExpired}
-            onCancelNomor={onCancelNomor}
-            onKeteranganChange={onKeteranganChange}
-          />
-        </div>
-      </main>
+        <main className="container mx-auto px-0 md:px-6 py-4 flex-1">
+          {showPasswordWarning && (
+            <div className="bg-yellow-50 border-y md:border-l-4 border-yellow-400 p-4 mb-6 rounded-none md:rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">⚠️</span>
+                <p className="text-sm text-yellow-700 font-medium">
+                  Password default terdeteksi! Segera ganti password Anda.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowChangePassword(true)}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg font-bold text-sm"
+              >
+                Ganti
+              </button>
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-0.5 md:gap-4 mb-3 md:mb-6">
+            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-green-100 text-center">
+              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Status</p>
+              <p className="text-[12px] md:text-sm font-bold text-green-600">Aktif</p>
+            </div>
+            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-blue-100 text-center">
+              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Role</p>
+              <p className="text-[12px] md:text-sm font-bold text-blue-600">{profile?.role}</p>
+            </div>
+            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-indigo-100 text-center">
+              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Seksi</p>
+              <p className="text-[10px] md:text-xs font-bold text-indigo-600 capitalize break-words">
+                {profile?.seksi}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 md:gap-10 items-start">
+            <NomorSuratForm
+              formData={formData}
+              formErrors={formErrors}
+              isSubmitting={isSubmitting}
+              reservedNumbers={reservedNumbers}
+              lockStatus={lockStatus}
+              profile={profile}
+              onInputChange={handleInputChange}
+              onSubmit={handleSubmit}
+              onShowNomorLama={() => setShowNomorLamaModal(true)}
+              onReset={handleReset}
+            />
+
+            <ReservedNumbersList
+              reservedNumbers={reservedNumbers}
+              expiredIds={expiredIds}
+              isSubmitting={isSubmitting}
+              onKonfirmasiSemua={onConfirmAll}
+              onBatalkanSemua={cancelAll}
+              onNomorExpired={handleNomorExpired}
+              onCancelNomor={onCancelNomor}
+              onKeteranganChange={onKeteranganChange}
+            />
+          </div>
+        </main>
+      </div>
 
       {/* Modals */}
       <HistoryModal
@@ -462,6 +479,7 @@ export default function Dashboard() {
         isOpen={showUserListModal}
         onClose={() => setShowUserListModal(false)}
         notification={notification}
+        onShowCreateUser={() => setShowCreateUserModal(true)}
       />
       <HariLiburModal
         isOpen={showHariLiburModal}

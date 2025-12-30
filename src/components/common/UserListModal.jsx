@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../services/supabase";
 import { updateUserData, deleteUser } from "../../services/adminService";
 
-export default function UserListModal({ isOpen, onClose, notification, profile }) {
+export default function UserListModal({ isOpen, onClose, notification, profile, onShowCreateUser }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,12 +109,27 @@ export default function UserListModal({ isOpen, onClose, notification, profile }
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Menampilkan 8 user per halaman agar tidak scroll
+
+  // ... (loadUsers tetap sama)
+
   const filteredUsers = users.filter(
     (user) =>
       user.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.seksi?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Reset ke halaman 1 saat mencari
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
 
   if (!isOpen) return null;
 
@@ -265,11 +280,22 @@ export default function UserListModal({ isOpen, onClose, notification, profile }
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl z-0">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-800">Daftar Pengguna</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onShowCreateUser}
+                className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-700 transition shadow-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah User
+              </button>
+              <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Search */}
@@ -277,13 +303,13 @@ export default function UserListModal({ isOpen, onClose, notification, profile }
             type="text"
             placeholder="Cari nama, username, atau seksi..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
           />
         </div>
 
-        {/* Content Table */}
-        <div className="flex-1 overflow-y-auto p-6 z-0">
+        {/* Content Table - Fixed min-height to prevent jumping during pagination (set to match 8 rows height) */}
+        <div className="flex-1 overflow-y-auto p-6 z-0 min-h-[580px]">
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -321,9 +347,11 @@ export default function UserListModal({ isOpen, onClose, notification, profile }
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user, index) => (
+                  {paginatedUsers.map((user, index) => (
                     <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 text-sm text-gray-700 text-center">{index + 1}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 text-center">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
                       <td className="px-4 py-3 text-sm font-semibold text-gray-800">{user.nama_lengkap}</td>
                       <td className="px-4 py-3 text-sm text-gray-600 font-mono">{user.username}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{user.seksi || "-"}</td>
@@ -396,10 +424,42 @@ export default function UserListModal({ isOpen, onClose, notification, profile }
         {/* Footer */}
         <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-xl z-0">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-600">
-              Total: <span className="font-bold text-gray-800">{filteredUsers.length}</span> pengguna
-              {searchTerm && ` (dari ${users.length} total)`}
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-gray-600">
+                Total: <span className="font-bold text-gray-800">{filteredUsers.length}</span> pengguna
+              </p>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <div className="flex items-center gap-1 px-2">
+                    <span className="text-xs font-bold text-blue-600">{currentPage}</span>
+                    <span className="text-xs text-gray-400">/</span>
+                    <span className="text-xs text-gray-500">{totalPages}</span>
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={onClose}
               className="px-6 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition"
