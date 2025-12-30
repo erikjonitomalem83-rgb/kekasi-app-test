@@ -15,6 +15,7 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 import AdminEmergencyPool from "../components/dashboard/AdminEmergencyPool";
 import NomorSuratForm from "../components/dashboard/NomorSuratForm";
 import ReservedNumbersList from "../components/dashboard/ReservedNumbersList";
+import HariLiburModal from "../components/dashboard/HariLiburModal";
 
 // Modals
 import CreateUserModal from "../components/common/CreateUserModal";
@@ -47,6 +48,7 @@ export default function Dashboard() {
   const [showNomorLamaModal, setShowNomorLamaModal] = useState(false);
   const [showRekapModal, setShowRekapModal] = useState(false);
   const [showUserListModal, setShowUserListModal] = useState(false);
+  const [showHariLiburModal, setShowHariLiburModal] = useState(false);
   const [showConfirmationResumeModal, setShowConfirmationResumeModal] = useState(false);
   const [idleWarningShown, setIdleWarningShown] = useState(false);
 
@@ -337,6 +339,7 @@ export default function Dashboard() {
         onShowHistory={() => setShowHistoryModal(true)}
         onShowCreateUser={() => setShowCreateUserModal(true)}
         onShowUserList={() => setShowUserListModal(true)}
+        onShowHoliday={() => setShowHariLiburModal(true)}
         onCleanExpired={cleanExpired}
         onShowProfile={() => setShowProfileModal(true)}
         onLogout={handleLogout}
@@ -458,6 +461,11 @@ export default function Dashboard() {
       <UserListModal
         isOpen={showUserListModal}
         onClose={() => setShowUserListModal(false)}
+        notification={notification}
+      />
+      <HariLiburModal
+        isOpen={showHariLiburModal}
+        onClose={() => setShowHariLiburModal(false)}
         notification={notification}
       />
       <ConfirmationResumeModal

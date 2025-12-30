@@ -596,24 +596,27 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                     <input
                                       type="text"
                                       maxLength="2"
-                                      value={editingData.kodeMasalah}
-                                      onChange={(e) =>
-                                        handleEditInputChange("kodeMasalah", e.target.value.toUpperCase())
-                                      }
-                                      className="w-10 px-1.5 py-1 border rounded text-xs"
-                                    />
-                                    <input
-                                      type="text"
-                                      maxLength="2"
                                       value={editingData.subMasalah1}
-                                      onChange={(e) => handleEditInputChange("subMasalah1", e.target.value)}
+                                      onChange={(e) =>
+                                        handleEditInputChange("subMasalah1", e.target.value.replace(/\D/g, ""))
+                                      }
+                                      onBlur={(e) => {
+                                        const val = e.target.value;
+                                        if (val && val.length === 1) handleEditInputChange("subMasalah1", `0${val}`);
+                                      }}
                                       className="w-10 px-1.5 py-1 border rounded text-xs"
                                     />
                                     <input
                                       type="text"
                                       maxLength="2"
                                       value={editingData.subMasalah2}
-                                      onChange={(e) => handleEditInputChange("subMasalah2", e.target.value)}
+                                      onChange={(e) =>
+                                        handleEditInputChange("subMasalah2", e.target.value.replace(/\D/g, ""))
+                                      }
+                                      onBlur={(e) => {
+                                        const val = e.target.value;
+                                        if (val && val.length === 1) handleEditInputChange("subMasalah2", `0${val}`);
+                                      }}
                                       className="w-10 px-1.5 py-1 border rounded text-xs"
                                     />
                                   </div>
@@ -959,7 +962,13 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                 type="text"
                                 maxLength="2"
                                 value={editingData.subMasalah1}
-                                onChange={(e) => handleEditInputChange("subMasalah1", e.target.value)}
+                                onChange={(e) =>
+                                  handleEditInputChange("subMasalah1", e.target.value.replace(/\D/g, ""))
+                                }
+                                onBlur={(e) => {
+                                  const val = e.target.value;
+                                  if (val && val.length === 1) handleEditInputChange("subMasalah1", `0${val}`);
+                                }}
                                 className="w-full p-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
                               />
                             </div>
@@ -969,7 +978,13 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                 type="text"
                                 maxLength="2"
                                 value={editingData.subMasalah2}
-                                onChange={(e) => handleEditInputChange("subMasalah2", e.target.value)}
+                                onChange={(e) =>
+                                  handleEditInputChange("subMasalah2", e.target.value.replace(/\D/g, ""))
+                                }
+                                onBlur={(e) => {
+                                  const val = e.target.value;
+                                  if (val && val.length === 1) handleEditInputChange("subMasalah2", `0${val}`);
+                                }}
                                 className="w-full p-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
                               />
                             </div>

@@ -1,4 +1,6 @@
 import { supabase } from "./supabase";
+import { getEffectiveWorkingDate } from "../utils/dateHelpers";
+import { getHolidays } from "./holidayService";
 
 /**
  * ATOMIC BATCH ALLOCATION - PER TAHUN
@@ -305,7 +307,15 @@ export async function createMultipleAdminReservedNumbers(
 export async function reserveNomorBerurutan(userId, formData, jumlah) {
   try {
     const { kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2 } = formData;
-    const today = new Date().toISOString().split("T")[0];
+
+    // Ambil data hari libur untuk tahun ini
+    const currentYear = new Date().getFullYear();
+    const holidayResult = await getHolidays(currentYear);
+    const holidayDates = holidayResult.success ? holidayResult.data.map((h) => h.tanggal) : [];
+
+    // Hitung tanggal kerja efektif (mundur jika weekend/libur)
+    const today = getEffectiveWorkingDate(new Date(), holidayDates);
+
     const expiredAt = new Date();
     expiredAt.setMinutes(expiredAt.getMinutes() + 5);
 
@@ -321,7 +331,6 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
     const resultData = [];
 
     // STEP 1: Ambil nomor cancelled untuk direuse
-    const currentYear = new Date().getFullYear();
     const cancelledNomor = await getCancelledNomor(jumlah, currentYear);
 
     // STEP 2: Reuse nomor cancelled (OPTIMIZED dengan BATCH)
@@ -361,7 +370,7 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
                   nomor_urut: nomor.nomor_urut,
                   nomor_lengkap: nomorLengkap,
                   tanggal: today,
-                  tahun: new Date().getFullYear(),
+                  tahun: currentYear,
                   status: "reserved",
                   user_id: userId,
                   reserved_at: new Date().toISOString(),
@@ -383,7 +392,6 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
         console.log(`[reserveNomorBerurutan] Batch deleted ${cancelledIds.length} cancelled nomor`);
 
         // BATCH INSERT semua sekaligus
-        const currentYear = new Date().getFullYear();
         const batchInsertData = cancelledNomor.map((nomor) => {
           const cleanSubMasalah2 = (subMasalah2 || "").toString().trim();
           const nomorLengkap =
@@ -441,7 +449,6 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
       if (allocatedNumbers.length > 0) {
         console.log(`[reserveNomorBerurutan] Batch inserting ${allocatedNumbers.length} numbers...`);
 
-        const currentYear = new Date().getFullYear();
         const batchInsertData = allocatedNumbers.map((nomorUrut) => {
           const cleanSubMasalah2 = (subMasalah2 || "").toString().trim();
           const nomorLengkap =
@@ -517,7 +524,15 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
 export async function reserveNomorAcak(userId, formData, jumlah) {
   try {
     const { kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2 } = formData;
-    const today = new Date().toISOString().split("T")[0];
+
+    // Ambil data hari libur untuk tahun ini
+    const currentYear = new Date().getFullYear();
+    const holidayResult = await getHolidays(currentYear);
+    const holidayDates = holidayResult.success ? holidayResult.data.map((h) => h.tanggal) : [];
+
+    // Hitung tanggal kerja efektif (mundur jika weekend/libur)
+    const today = getEffectiveWorkingDate(new Date(), holidayDates);
+
     const expiredAt = new Date();
     expiredAt.setMinutes(expiredAt.getMinutes() + 5);
 
@@ -530,7 +545,6 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
 
     console.log(`[reserveNomorAcak] User ${userId} request ${jumlah} nomor (mode acak)`);
 
-    const currentYear = new Date().getFullYear();
     const cancelledNomor = await getCancelledNomor(100, currentYear);
     const shuffled = cancelledNomor.sort(() => Math.random() - 0.5);
     const nomorToReuse = shuffled.slice(0, jumlah);
@@ -564,7 +578,7 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
               nomor_urut: nomor.nomor_urut,
               nomor_lengkap: nomorLengkap,
               tanggal: today,
-              tahun: new Date().getFullYear(),
+              tahun: currentYear,
               status: "reserved",
               user_id: userId,
               reserved_at: new Date().toISOString(),
