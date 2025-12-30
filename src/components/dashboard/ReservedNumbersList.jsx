@@ -10,6 +10,7 @@ export default function ReservedNumbersList({
   onNomorExpired,
   onCancelNomor,
   onKeteranganChange,
+  isModalView = false,
 }) {
   const headerRef = useRef(null);
   const prevCount = useRef(0);
@@ -18,7 +19,7 @@ export default function ReservedNumbersList({
     const currentCount = reservedNumbers?.length || 0;
     // Scroll hanya jika bertambah (bukan saat awal load yang sudah ada, atau saat berkurang/batal)
     // Dan hanya di mobile/tablet (lg:col-span-6 adalah 1024px di Tailwind)
-    if (currentCount > prevCount.current && window.innerWidth < 1024) {
+    if (currentCount > prevCount.current && window.innerWidth < 1024 && !isModalView) {
       // Kecil delay untuk memastikan DOM sudah dirender jika ada transisi
       const timer = setTimeout(() => {
         headerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -26,9 +27,10 @@ export default function ReservedNumbersList({
       return () => clearTimeout(timer);
     }
     prevCount.current = currentCount;
-  }, [reservedNumbers?.length]);
+  }, [reservedNumbers?.length, isModalView]);
 
   if (!reservedNumbers) {
+    if (isModalView) return null;
     return (
       <div className="lg:col-span-6 bg-white bg-opacity-50 p-6 rounded-xl shadow-md border-2 border-dashed border-gray-300">
         <h3 style={{ color: "#00325f" }} className="text-lg font-bold mb-4">
@@ -53,9 +55,19 @@ export default function ReservedNumbersList({
   }
 
   return (
-    <div className="lg:col-span-6 bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200">
+    <div
+      className={`${
+        isModalView
+          ? "bg-white p-6"
+          : "lg:col-span-6 bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200"
+      }`}
+    >
       <div
-        className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-2 -mt-4 md:-mt-6 mb-3 md:rounded-t-xl border-b border-gray-100 flex items-center justify-between shadow-sm"
+        className={`${
+          isModalView
+            ? "hidden"
+            : "sticky top-0 z-20 bg-white/95 backdrop-blur-sm -mx-4 md:-mx-6 px-4 md:px-6 py-2 -mt-4 md:-mt-6 mb-3 md:rounded-t-xl border-b border-gray-100 flex items-center justify-between shadow-sm"
+        }`}
         ref={headerRef}
       >
         <h3 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold">
@@ -73,6 +85,18 @@ export default function ReservedNumbersList({
           </div>
         )}
       </div>
+
+      {/* Timer moved to top when in modal view */}
+      {isModalView && reservedNumbers.length > 0 && (
+        <div className="mb-6 flex items-center justify-center gap-3 bg-red-50 p-3 rounded-xl border border-red-100 shadow-sm animate-pulse">
+          <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
+          <span className="text-xs font-black text-red-800 uppercase tracking-widest">Sisa Waktu Konfirmasi:</span>
+          <CountdownTimer
+            expiredAt={reservedNumbers[0].expired_at}
+            onExpired={() => onNomorExpired(reservedNumbers.map((n) => n.id))}
+          />
+        </div>
+      )}
 
       <div className="mb-4 flex flex-row justify-center gap-2">
         <button

@@ -14,6 +14,7 @@ import { useIdleTimer } from "../hooks/useIdleTimer";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import AdminEmergencyPool from "../components/dashboard/AdminEmergencyPool";
 import NomorSuratForm from "../components/dashboard/NomorSuratForm";
+import ReservedNumbersModal from "../components/dashboard/ReservedNumbersModal";
 import ReservedNumbersList from "../components/dashboard/ReservedNumbersList";
 import HariLiburModal from "../components/dashboard/HariLiburModal";
 import Sidebar from "../layout/Sidebar";
@@ -387,24 +388,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-0.5 md:gap-4 mb-3 md:mb-6">
-            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-green-100 text-center">
-              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Status</p>
-              <p className="text-[12px] md:text-sm font-bold text-green-600">Aktif</p>
-            </div>
-            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-blue-100 text-center">
-              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Role</p>
-              <p className="text-[12px] md:text-sm font-bold text-blue-600">{profile?.role}</p>
-            </div>
-            <div className="bg-white p-2 md:p-3 rounded-none md:rounded-lg shadow-sm border-y md:border border-indigo-100 text-center">
-              <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-0.5">Seksi</p>
-              <p className="text-[10px] md:text-xs font-bold text-indigo-600 capitalize break-words">
-                {profile?.seksi}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 md:gap-10 items-start">
+          <div className="max-w-4xl mx-auto">
             <NomorSuratForm
               formData={formData}
               formErrors={formErrors}
@@ -417,22 +401,22 @@ export default function Dashboard() {
               onShowNomorLama={() => setShowNomorLamaModal(true)}
               onReset={handleReset}
             />
-
-            <ReservedNumbersList
-              reservedNumbers={reservedNumbers}
-              expiredIds={expiredIds}
-              isSubmitting={isSubmitting}
-              onKonfirmasiSemua={onConfirmAll}
-              onBatalkanSemua={cancelAll}
-              onNomorExpired={handleNomorExpired}
-              onCancelNomor={onCancelNomor}
-              onKeteranganChange={onKeteranganChange}
-            />
           </div>
         </main>
       </div>
 
       {/* Modals */}
+      <ReservedNumbersModal
+        isOpen={reservedNumbers?.length > 0}
+        reservedNumbers={reservedNumbers}
+        expiredIds={expiredIds}
+        isSubmitting={isSubmitting}
+        onKonfirmasiSemua={onConfirmAll}
+        onBatalkanSemua={cancelAll}
+        onNomorExpired={handleNomorExpired}
+        onCancelNomor={onCancelNomor}
+        onKeteranganChange={onKeteranganChange}
+      />
       <HistoryModal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
