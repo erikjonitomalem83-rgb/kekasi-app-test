@@ -65,7 +65,7 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <div className="p-8 sm:p-12 mx-4 max-w-[420px] w-full relative z-10 animate-slide-up">
+      <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 sm:p-12 mx-4 max-w-[440px] w-full relative z-10 animate-slide-up border border-white">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-0">
@@ -106,7 +106,7 @@ export default function Login() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="input-field !normal-case bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40 transition-all duration-200 py-3 rounded-xl"
+                className="input-field !normal-case bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-kekasi-blue-500 transition-all duration-200 py-3.5 rounded-2xl shadow-sm"
                 placeholder="Masukkan username"
                 required
                 disabled={isLoading}
@@ -126,7 +126,7 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="input-field !normal-case pr-12 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40 transition-all duration-200 py-3 rounded-xl"
+                className="input-field !normal-case pr-12 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-kekasi-blue-500 transition-all duration-200 py-3.5 rounded-2xl shadow-sm"
                 placeholder="Masukkan password"
                 required
                 disabled={isLoading}
@@ -166,7 +166,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowForgotPassword(true)}
-              className="text-sm text-kekasi-yellow-400 hover:text-kekasi-yellow-300 font-semibold transition-colors hover:underline"
+              className="text-sm text-kekasi-blue-600 hover:text-kekasi-blue-700 font-semibold transition-colors hover:underline"
               disabled={isLoading}
             >
               Lupa Password?
@@ -175,8 +175,8 @@ export default function Login() {
         </form>
 
         {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-white/10">
-          <p className="text-xs text-center text-white/60">© 2026 Kantor Imigrasi Kelas II TPI Pematang Siantar</p>
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-xs text-center text-gray-500">© 2026 Kantor Imigrasi Kelas II TPI Pematang Siantar</p>
         </div>
       </div>
 
