@@ -154,12 +154,22 @@ export default function ReservedNumbersList({
                 </div>
               </div>
 
-              {/* Desktop Row View */}
               <div className="hidden md:flex items-center gap-4">
-                <div className="flex items-center gap-1 w-24 bg-blue-50 px-2 py-2 rounded-lg border border-blue-200 shadow-sm leading-none">
-                  <span className="text-sm font-black text-blue-700">#{sequenceNum}</span>
-                  <div className="w-px h-4 bg-blue-200 mx-1"></div>
-                  <span className="text-sm font-black text-gray-900 ml-auto">{angkaAkhir}</span>
+                <div
+                  className={`flex flex-col justify-center items-center gap-1 w-24 bg-blue-50 px-2 rounded-lg border border-blue-200 shadow-sm leading-none ${
+                    nomor.is_reused ? "py-1" : "py-2"
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm font-black text-blue-700">#{sequenceNum}</span>
+                    <div className="w-px h-4 bg-blue-200 mx-1"></div>
+                    <span className="text-sm font-black text-gray-900 ml-auto">{angkaAkhir}</span>
+                  </div>
+                  {nomor.is_reused && (
+                    <span className="text-[9px] text-blue-600 font-bold leading-none animate-pulse text-center">
+                      Reuse Nomor Batal
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex-1">
