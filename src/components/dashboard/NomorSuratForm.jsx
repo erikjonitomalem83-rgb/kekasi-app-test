@@ -88,7 +88,7 @@ const NomorSuratForm = ({
                 {label} <span className="text-red-500">*</span>
               </label>
               <input
-                className={`w-full px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base
                 focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                 ${formErrors[key] ? "border-red-500" : ""}`}
                 value={formData[key]}
@@ -108,7 +108,7 @@ const NomorSuratForm = ({
             </label>
             <div className="relative">
               <input
-                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base pr-8
+                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base pr-8
                   focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                   ${formErrors.kodeMasalah ? "border-red-500" : ""}`}
                 maxLength="2"
@@ -140,7 +140,7 @@ const NomorSuratForm = ({
               </button>
             </div>
             {showMasalahDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
                 {problems.map((prob) => (
                   <button
                     key={prob}
@@ -175,7 +175,7 @@ const NomorSuratForm = ({
                 {label} {!optional && <span className="text-red-500">*</span>}
               </label>
               <input
-                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base
+                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base
                   focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                   ${formErrors[key] ? "border-red-500" : ""}`}
                 maxLength="2"
@@ -267,7 +267,7 @@ const NomorSuratForm = ({
             Keterangan (Opsional)
           </label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded box-border resize-none text-xs md:text-base
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg box-border resize-none text-xs md:text-base
             focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150"
             rows="2"
             placeholder="Contoh: Surat perjalanan dinas 3 pegawai"
