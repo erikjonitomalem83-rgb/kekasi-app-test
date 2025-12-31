@@ -308,13 +308,21 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
   try {
     const { kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2 } = formData;
 
-    // Ambil data hari libur untuk tahun ini
-    const currentYear = new Date().getFullYear();
-    const holidayResult = await getHolidays(currentYear);
-    const holidayDates = holidayResult.success ? holidayResult.data.map((h) => h.tanggal) : [];
+    // Ambil data hari libur untuk tahun ini DAN tahun sebelumnya
+    // (karena di awal tahun baru, tanggal mungkin mundur ke tahun sebelumnya)
+    const thisYear = new Date().getFullYear();
+    const [holidayThisYear, holidayLastYear] = await Promise.all([getHolidays(thisYear), getHolidays(thisYear - 1)]);
+    const holidayDates = [
+      ...(holidayThisYear.success ? holidayThisYear.data.map((h) => h.tanggal) : []),
+      ...(holidayLastYear.success ? holidayLastYear.data.map((h) => h.tanggal) : []),
+    ];
 
     // Hitung tanggal kerja efektif (mundur jika weekend/libur)
     const today = getEffectiveWorkingDate(new Date(), holidayDates);
+
+    // PENTING: Tahun diambil dari tanggal efektif, BUKAN dari new Date()
+    // Ini memastikan konsistensi: jika tanggal = 31 Des 2025, maka tahun = 2025
+    const currentYear = parseInt(today.substring(0, 4));
 
     const expiredAt = new Date();
     expiredAt.setMinutes(expiredAt.getMinutes() + 5);
@@ -525,13 +533,21 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
   try {
     const { kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2 } = formData;
 
-    // Ambil data hari libur untuk tahun ini
-    const currentYear = new Date().getFullYear();
-    const holidayResult = await getHolidays(currentYear);
-    const holidayDates = holidayResult.success ? holidayResult.data.map((h) => h.tanggal) : [];
+    // Ambil data hari libur untuk tahun ini DAN tahun sebelumnya
+    // (karena di awal tahun baru, tanggal mungkin mundur ke tahun sebelumnya)
+    const thisYear = new Date().getFullYear();
+    const [holidayThisYear, holidayLastYear] = await Promise.all([getHolidays(thisYear), getHolidays(thisYear - 1)]);
+    const holidayDates = [
+      ...(holidayThisYear.success ? holidayThisYear.data.map((h) => h.tanggal) : []),
+      ...(holidayLastYear.success ? holidayLastYear.data.map((h) => h.tanggal) : []),
+    ];
 
     // Hitung tanggal kerja efektif (mundur jika weekend/libur)
     const today = getEffectiveWorkingDate(new Date(), holidayDates);
+
+    // PENTING: Tahun diambil dari tanggal efektif, BUKAN dari new Date()
+    // Ini memastikan konsistensi: jika tanggal = 31 Des 2025, maka tahun = 2025
+    const currentYear = parseInt(today.substring(0, 4));
 
     const expiredAt = new Date();
     expiredAt.setMinutes(expiredAt.getMinutes() + 5);

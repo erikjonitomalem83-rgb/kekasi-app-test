@@ -34,6 +34,8 @@ import { logout as authLogout } from "../services/authService";
 import { cleanupOnLogout } from "../services/lockService";
 import { cancelNomorSurat } from "../services/nomorSuratService";
 import { supabase } from "../services/supabase";
+import { getHolidays } from "../services/holidayService";
+import { getDateWarningInfo } from "../utils/dateHelpers";
 
 export default function Dashboard() {
   const { profile, user, isAdmin } = useAuth();
@@ -53,6 +55,7 @@ export default function Dashboard() {
   const [showHariLiburModal, setShowHariLiburModal] = useState(false);
   const [showConfirmationResumeModal, setShowConfirmationResumeModal] = useState(false);
   const [idleWarningShown, setIdleWarningShown] = useState(false);
+  const [dateWarning, setDateWarning] = useState(null);
 
   // ========== FORM STATE ==========
   const [formData, setFormData] = useState({
@@ -171,6 +174,32 @@ export default function Dashboard() {
       loadAdminPoolSchedule();
     }
   }, [isAdmin, formData, loadAdminPool, loadEdgeFunctionLogs, loadAdminPoolSchedule]);
+
+  // Check for date warning (saat awal tahun jika tanggal mundur ke tahun sebelumnya)
+  useEffect(() => {
+    const checkDateWarning = async () => {
+      try {
+        const thisYear = new Date().getFullYear();
+        const [holidayThisYear, holidayLastYear] = await Promise.all([
+          getHolidays(thisYear),
+          getHolidays(thisYear - 1),
+        ]);
+        const holidayDates = [
+          ...(holidayThisYear.success ? holidayThisYear.data.map((h) => h.tanggal) : []),
+          ...(holidayLastYear.success ? holidayLastYear.data.map((h) => h.tanggal) : []),
+        ];
+        const warningInfo = getDateWarningInfo(holidayDates);
+        if (warningInfo.showWarning) {
+          setDateWarning(warningInfo);
+        } else {
+          setDateWarning(null);
+        }
+      } catch (error) {
+        console.error("[Dashboard] Error checking date warning:", error);
+      }
+    };
+    checkDateWarning();
+  }, []);
 
   // ========== HANDLERS ==========
   const handleInputChange = (field, value) => {
@@ -437,6 +466,7 @@ export default function Dashboard() {
               onSubmit={handleSubmit}
               onShowNomorLama={() => setShowNomorLamaModal(true)}
               onReset={handleReset}
+              dateWarning={dateWarning}
             />
           </div>
         </main>
