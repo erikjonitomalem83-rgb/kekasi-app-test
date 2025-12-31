@@ -190,7 +190,9 @@ const NomorSuratForm = ({
                   onFocus={() => onInputChange(key, "")}
                   onBlur={(e) => {
                     let value = e.target.value;
-                    if (value.length === 1) {
+                    if (!value) {
+                      onInputChange(key, "01");
+                    } else if (value.length === 1) {
                       onInputChange(key, `0${value}`);
                     }
                   }}
