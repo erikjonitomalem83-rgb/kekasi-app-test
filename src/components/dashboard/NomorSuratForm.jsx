@@ -224,7 +224,7 @@ const NomorSuratForm = ({
 
               <input
                 type="number"
-                className="w-12 h-10 md:w-14 md:h-12 text-center text-lg md:text-xl font-bold text-gray-800 bg-white border-2 border-gray-200 rounded-none focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-12 h-10 md:w-14 md:h-12 text-center text-lg md:text-xl font-bold text-gray-800 bg-white border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 value={formData.jumlahNomor}
                 onChange={(e) => {
                   const val = e.target.value;
