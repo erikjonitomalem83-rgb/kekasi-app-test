@@ -7,7 +7,13 @@ import "./index.css";
 createRoot(document.getElementById("root")).render(
   // <StrictMode> // COMMENT DULU untuk testing
   <NotificationProvider>
-    <RouterProvider router={router} />
+    <RouterProvider
+      router={router}
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    />
   </NotificationProvider>
   // </StrictMode>
 );

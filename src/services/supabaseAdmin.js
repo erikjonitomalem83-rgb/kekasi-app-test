@@ -8,5 +8,6 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
+    storageKey: "supabase.admin.auth.token", // Beda key agar tidak konflik dengan client utama
   },
 });

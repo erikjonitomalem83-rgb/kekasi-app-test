@@ -29,7 +29,7 @@ const NomorSuratForm = ({
 
   return (
     <div className="bg-white rounded md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200 max-w-sm md:max-w-lg mx-auto overflow-hidden">
-      <div className="bg-gray-50 border-b border-gray-200 py-3 md:py-4 px-4 md:px-6 mb-4 md:mb-6">
+      <div className="bg-[#efbc62] border-b border-[#efbc62]/20 py-3 md:py-4 px-4 md:px-6 mb-4 md:mb-6">
         <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold text-center">
           Pesan Nomor Surat
         </h2>
