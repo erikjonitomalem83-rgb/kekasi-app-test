@@ -329,14 +329,14 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div
-          className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-b flex justify-between items-center"
-          style={{ backgroundColor: "#00325f" }}
+          className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-b border-white/10 flex justify-between items-center"
+          style={{ backgroundColor: "#2563eb" }}
         >
           <div className="flex-1 mr-4">
-            <h2 className="text-sm md:text-xl font-bold text-white text-left leading-tight">
+            <h2 className="text-sm md:text-xl font-bold text-left leading-tight text-white">
               {activeTab === "confirmed" ? "Riwayat Konfirmasi" : "Riwayat Emergency"}
             </h2>
-            <p className="text-[10px] md:text-sm text-gray-200 mt-0.5 text-left line-clamp-1">
+            <p className="text-[10px] md:text-sm text-white/80 mt-0.5 text-left line-clamp-1">
               {activeTab === "confirmed"
                 ? isAdmin
                   ? "Semua nomor yang telah dikonfirmasi"
@@ -347,7 +347,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-white hover:text-gray-300 transition shrink-0 hover:bg-white/10 rounded-full"
+            className="p-2 text-white hover:bg-white/10 transition shrink-0 rounded-full"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -397,80 +397,79 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
               />
             </div>
 
-            {/* Selects & Refresh - Stacked on Mobile, Row on Desktop */}
-            <div className="flex items-center gap-2">
-              <div className="grid grid-cols-2 gap-2 flex-1 md:flex md:flex-row md:gap-3">
-                <select
-                  value={filterYear}
-                  onChange={(e) => setFilterYear(e.target.value)}
-                  className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
-                >
-                  {availableYears.map((year) => (
-                    <option key={year.value} value={year.value}>
-                      {year.label}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={filterMonth}
-                  onChange={(e) => setFilterMonth(e.target.value)}
-                  className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
-                >
-                  {bulanOptions.map((bulan) => (
-                    <option key={bulan.value} value={bulan.value}>
-                      {bulan.label}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-500 bg-white"
-                >
-                  <option value="newest">Terbaru</option>
-                  <option value="oldest">Terlama</option>
-                  <option value="nomor_asc">Kecil ke Besar</option>
-                  <option value="nomor_desc">Besar ke Kecil</option>
-                </select>
-              </div>
-
-              <button
-                onClick={loadHistory}
-                disabled={loading}
-                className="p-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg text-xs md:text-sm font-bold hover:bg-blue-700 transition disabled:opacity-50 shadow-sm shrink-0"
+            {/* Filter Dropdowns */}
+            <div className="grid grid-cols-3 gap-2 md:flex md:flex-row md:gap-3">
+              <select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value)}
+                className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
               >
-                {loading ? (
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                )}
-                <span className="hidden md:inline">Refresh</span>
-              </button>
+                {availableYears.map((year) => (
+                  <option key={year.value} value={year.value}>
+                    {year.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="px-2 md:px-3 py-2 border border-blue-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-blue-500 bg-white text-blue-800"
+              >
+                {bulanOptions.map((bulan) => (
+                  <option key={bulan.value} value={bulan.value}>
+                    {bulan.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-[10px] md:text-xs focus:outline-none focus:border-blue-500 bg-white"
+              >
+                <option value="newest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="nomor_asc">Kecil ke Besar</option>
+                <option value="nomor_desc">Besar ke Kecil</option>
+              </select>
             </div>
+
+            {/* Refresh Button - Full width on mobile, inline on desktop */}
+            <button
+              onClick={loadHistory}
+              disabled={loading}
+              className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition disabled:opacity-50 shadow-sm"
+            >
+              {loading ? (
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              )}
+              <span>{loading ? "Memuat..." : "Refresh Data"}</span>
+            </button>
           </div>
         </div>
 

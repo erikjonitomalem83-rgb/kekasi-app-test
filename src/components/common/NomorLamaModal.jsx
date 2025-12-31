@@ -216,13 +216,13 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">Nomor Lama Tersedia</h2>
+        <div className="px-6 py-4 bg-[#9333ea] border-b border-white/10 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-white">Nomor Lama Tersedia</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="p-2 text-gray-400 hover:text-gray-600 transition disabled:opacity-50 hover:bg-gray-100 rounded-full"
+            className="p-2 text-white hover:bg-white/10 transition disabled:opacity-50 rounded-full"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -371,7 +371,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
                         <tr
                           key={nomor.id}
                           className={`border-b border-gray-200 hover:bg-gray-50 transition ${
-                            isSelected ? "bg-blue-50" : ""
+                            isSelected ? "bg-purple-50" : ""
                           }`}
                         >
                           <td className="px-4 py-3">
@@ -382,7 +382,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
                                 e.stopPropagation();
                                 handleCheckboxChange(nomor);
                               }}
-                              className="w-4 h-4 text-blue-600 cursor-pointer"
+                              className="w-4 h-4 text-purple-600 cursor-pointer"
                             />
                           </td>
                           <td
@@ -424,14 +424,14 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
               {totalPages > 1 && (
                 <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
                   <p className="text-sm text-gray-600 font-medium">
-                    Halaman <span className="text-blue-600">{currentPage}</span> dari{" "}
+                    Halaman <span className="text-purple-600">{currentPage}</span> dari{" "}
                     <span className="text-gray-900">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1 || loading}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-purple-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -453,8 +453,8 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
                             onClick={() => setCurrentPage(pageNum)}
                             className={`w-9 h-9 flex items-center justify-center text-sm font-bold transition-all ${
                               currentPage === pageNum
-                                ? "bg-blue-600 text-white z-10 border border-blue-600 shadow-md transform scale-110 rounded-lg"
-                                : "bg-white text-gray-600 border border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                                ? "bg-purple-600 text-white z-10 border border-purple-600 shadow-md transform scale-110 rounded-lg"
+                                : "bg-white text-gray-600 border border-gray-300 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
                             }`}
                           >
                             {pageNum}
@@ -466,7 +466,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
                     <button
                       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages || loading}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-purple-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
                     >
                       Next
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,7 +488,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
                 Keterangan Penggunaan <span className="text-red-500">*</span>
               </label>
               <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 resize-none"
                 rows="2"
                 placeholder="Contoh: Nomor digunakan untuk surat perjalanan dinas 3 pegawai"
                 value={keterangan}
@@ -511,7 +511,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
               <button
                 onClick={handleReserve}
                 disabled={loading || selectedNomor.length === 0 || keterangan.trim() === ""}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Memproses..." : `Gunakan ${selectedNomor.length} Nomor`}
               </button>

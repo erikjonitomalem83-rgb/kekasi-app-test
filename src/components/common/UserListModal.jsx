@@ -277,9 +277,9 @@ export default function UserListModal({ isOpen, onClose, notification, profile, 
         )}
 
         {/* LIST VIEW (Tampilan Tabel Normal) */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl z-0">
+        <div className="sticky top-0 bg-[#9333ea] border-b border-white/10 px-6 py-4 rounded-t-xl z-0">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Daftar Pengguna</h2>
+            <h2 className="text-xl font-bold text-white">Daftar Pengguna</h2>
             <div className="flex items-center gap-3">
               <button
                 onClick={onShowCreateUser}
@@ -290,7 +290,7 @@ export default function UserListModal({ isOpen, onClose, notification, profile, 
                 </svg>
                 Tambah User
               </button>
-              <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition">
+              <button onClick={onClose} className="text-white hover:bg-white/10 transition rounded-full p-2">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -443,7 +443,7 @@ export default function UserListModal({ isOpen, onClose, notification, profile, 
                   </button>
 
                   <div className="flex items-center gap-1 px-2">
-                    <span className="text-xs font-bold text-blue-600">{currentPage}</span>
+                    <span className="text-xs font-bold text-purple-600">{currentPage}</span>
                     <span className="text-xs text-gray-400">/</span>
                     <span className="text-xs text-gray-500">{totalPages}</span>
                   </div>

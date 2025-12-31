@@ -58,17 +58,19 @@ export function generateRekapHarian(data, filters) {
     { origin: `A${summaryStartRow}` }
   );
 
-  // STEP 5: Set Column Widths
-  worksheet["!cols"] = [
-    { wch: 5 },
-    { wch: 12 },
-    { wch: 30 },
-    { wch: 18 },
-    { wch: 50 },
-    { wch: 22 },
-    { wch: 20 },
-    { wch: 12 },
+  // STEP 5: Calculate and Set Column Widths based on content
+  const headers = [
+    "NO",
+    "NO SURAT",
+    "KODE SURAT",
+    "TANGGAL SURAT",
+    "HAL/PERIHAL",
+    "PENGAMBIL NOMOR",
+    "SEKSI",
+    "STATUS",
   ];
+  const allData = [headers, ...dataRows];
+  worksheet["!cols"] = calculateColumnWidths(allData, [5, 12, 30, 18, 50, 25, 22, 12]);
 
   // STEP 6: Merge Header Cells
   worksheet["!merges"] = [
@@ -282,7 +284,10 @@ export function generateRekapBulanan(data, filters) {
 
     const detailLastRow = 5 + dateData.length - 1;
 
-    detailSheet["!cols"] = [{ wch: 5 }, { wch: 12 }, { wch: 30 }, { wch: 50 }, { wch: 22 }, { wch: 20 }, { wch: 12 }];
+    // Calculate column widths based on content
+    const detailHeaders = ["NO", "NO SURAT", "KODE SURAT", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS"];
+    const detailAllData = [detailHeaders, ...dateData];
+    detailSheet["!cols"] = calculateColumnWidths(detailAllData, [5, 12, 30, 50, 25, 22, 12]);
     detailSheet["!merges"] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
       { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
@@ -479,16 +484,19 @@ export function generateRekapTahunan(data, filters) {
 
     const detailLastRow = 5 + monthData.length - 1;
 
-    detailSheet["!cols"] = [
-      { wch: 5 },
-      { wch: 12 },
-      { wch: 30 },
-      { wch: 18 },
-      { wch: 50 },
-      { wch: 22 },
-      { wch: 20 },
-      { wch: 12 },
+    // Calculate column widths based on content
+    const monthHeaders = [
+      "NO",
+      "NO SURAT",
+      "KODE SURAT",
+      "TANGGAL",
+      "HAL/PERIHAL",
+      "PENGAMBIL NOMOR",
+      "SEKSI",
+      "STATUS",
     ];
+    const monthAllData = [monthHeaders, ...monthData];
+    detailSheet["!cols"] = calculateColumnWidths(monthAllData, [5, 12, 30, 18, 50, 25, 22, 12]);
 
     detailSheet["!merges"] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
@@ -551,6 +559,35 @@ function formatDate(dateString) {
     day: "2-digit",
     month: "long",
     year: "numeric",
+  });
+}
+
+/**
+ * Calculate column widths based on content
+ * @param {Array} data - Array of row arrays
+ * @param {Array} minWidths - Minimum width for each column
+ * @returns {Array} Column width configuration
+ */
+function calculateColumnWidths(data, minWidths = []) {
+  const colWidths = [];
+
+  data.forEach((row) => {
+    row.forEach((cell, colIndex) => {
+      const cellValue = String(cell || "");
+      const cellWidth = cellValue.length + 2; // Add padding
+
+      if (!colWidths[colIndex] || cellWidth > colWidths[colIndex]) {
+        colWidths[colIndex] = cellWidth;
+      }
+    });
+  });
+
+  // Apply minimum widths and cap maximum
+  return colWidths.map((width, index) => {
+    const minWidth = minWidths[index] || 8;
+    const maxWidth = 80; // Cap maximum width - increased for long content like HAL/PERIHAL
+    const finalWidth = Math.max(minWidth, Math.min(width, maxWidth));
+    return { wch: finalWidth };
   });
 }
 

@@ -12,6 +12,7 @@ export default function ReservedNumbersList({
   onItemDataChange,
   isModalView = false,
 }) {
+  const [activeDropdownId, setActiveDropdownId] = React.useState(null);
   const headerRef = useRef(null);
   const prevCount = useRef(0);
   const inputRefs = useRef({}); // Store refs for all inputs: { [id-field]: element }
@@ -154,9 +155,9 @@ export default function ReservedNumbersList({
                 <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-stretch md:items-start">
                   {/* ULTRA COMPACT MOBILE HEADER (Side-by-side Badge, Codes, Actions) */}
                   <div className="flex md:hidden items-center justify-between gap-2">
-                    <div className="relative flex flex-col items-center justify-center w-10 h-10 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 shadow-inner shrink-0 leading-none">
-                      <span className="text-[7px] font-bold opacity-30 mb-0.5">#{sequenceNum}</span>
-                      <span className="text-sm font-bold">{nomor.nomor_urut}</span>
+                    <div className="relative flex flex-col items-center justify-center w-12 h-12 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 shadow-inner shrink-0 leading-none">
+                      <span className="text-[9px] font-bold opacity-50 mb-0.5">#{sequenceNum}</span>
+                      <span className="text-base font-bold">{nomor.nomor_urut}</span>
                       {nomor.is_reused && (
                         <div className="absolute -top-1 -right-1 bg-yellow-400 text-[5px] font-bold px-1 py-0.5 rounded-full shadow-sm text-yellow-900 border border-yellow-500 animate-bounce">
                           REUSE
@@ -166,22 +167,48 @@ export default function ReservedNumbersList({
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <span className="text-[8px] font-bold text-gray-400 uppercase">Kode:</span>
-                        <div className="flex items-center gap-0.5">
+                        <div className="flex items-center gap-0.5 relative">
                           <input
                             ref={(el) => (inputRefs.current[`${nomor.id}-km`] = el)}
                             type="text"
                             maxLength={2}
                             autoComplete="off"
-                            className="w-7 text-center text-[10px] font-bold bg-white border border-gray-200 rounded-md py-0.5 uppercase text-blue-700"
+                            className="w-10 text-center text-[10px] font-bold bg-white border border-gray-200 rounded-md py-0.5 uppercase text-blue-700 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 z-10 relative"
                             value={nomor.kode_masalah}
                             onChange={(e) => {
                               onItemDataChange(nomor.id, "kode_masalah", e.target.value);
-                              if (e.target.value.length === 2) inputRefs.current[`${nomor.id}-ks1`]?.focus();
                             }}
+                            onFocus={(e) => {
+                              setActiveDropdownId(nomor.id);
+                              // Auto scroll to make room for dropdown
+                              setTimeout(() => {
+                                e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                              }, 100);
+                            }}
+                            onBlur={() => setTimeout(() => setActiveDropdownId(null), 200)}
                             placeholder="UM"
                             disabled={isExpired}
                           />
+                          {activeDropdownId === nomor.id && (
+                            <div
+                              className="absolute top-full left-0 w-20 bg-white border border-gray-200 rounded-lg shadow-xl mt-1 overflow-hidden py-1 max-h-48 overflow-y-auto"
+                              style={{ zIndex: 9999 }}
+                            >
+                              {["UM", "GR", "SA", "TI", "KU"].map((opt) => (
+                                <div
+                                  key={opt}
+                                  className="px-2 py-2 text-[10px] font-bold text-gray-700 hover:bg-blue-50 cursor-pointer text-center border-b border-gray-50 last:border-0"
+                                  onClick={() => {
+                                    onItemDataChange(nomor.id, "kode_masalah", opt);
+                                    setActiveDropdownId(null);
+                                    inputRefs.current[`${nomor.id}-ks1`]?.focus(); // Optional: Focus next after selection for better flow
+                                  }}
+                                >
+                                  {opt}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                           <span className="font-bold text-gray-300">.</span>
                           <input
                             ref={(el) => (inputRefs.current[`${nomor.id}-ks1`] = el)}
@@ -189,9 +216,14 @@ export default function ReservedNumbersList({
                             maxLength={3}
                             className="w-7 text-center text-[10px] font-bold bg-white border border-gray-200 rounded-md py-0.5 text-blue-700"
                             value={nomor.kode_submasalah1}
+                            onFocus={(e) => {
+                              if (nomor.kode_submasalah1 === "01") {
+                                onItemDataChange(nomor.id, "kode_submasalah1", "");
+                              }
+                              e.target.select();
+                            }}
                             onChange={(e) => {
                               onItemDataChange(nomor.id, "kode_submasalah1", e.target.value);
-                              if (e.target.value.length >= 2) inputRefs.current[`${nomor.id}-ks2`]?.focus();
                             }}
                             placeholder="01"
                             disabled={isExpired}
@@ -202,13 +234,19 @@ export default function ReservedNumbersList({
                             maxLength={3}
                             className="w-7 text-center text-[10px] font-bold bg-white border border-gray-200 rounded-md py-0.5 text-blue-700 ml-0.5"
                             value={nomor.kode_submasalah2}
+                            onFocus={(e) => {
+                              if (nomor.kode_submasalah2 === "01") {
+                                onItemDataChange(nomor.id, "kode_submasalah2", "");
+                              }
+                              e.target.select();
+                            }}
                             onChange={(e) => onItemDataChange(nomor.id, "kode_submasalah2", e.target.value)}
                             placeholder="01"
                             disabled={isExpired}
                           />
                         </div>
                       </div>
-                      <div className="mt-0.5 text-[8px] font-bold text-blue-500 truncate uppercase tracking-tighter opacity-70">
+                      <div className="mt-0.5 text-[10px] font-bold text-blue-600 truncate uppercase tracking-tight">
                         {nomor.nomor_lengkap}
                       </div>
                     </div>
@@ -248,21 +286,48 @@ export default function ReservedNumbersList({
                     <div className="hidden md:flex flex-row items-center gap-3">
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Kode:</span>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 relative">
                           <input
                             ref={(el) => (inputRefs.current[`${nomor.id}-km-pc`] = el)}
                             type="text"
                             maxLength={2}
                             autoComplete="off"
-                            className="w-8 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg py-1 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none uppercase text-blue-700"
+                            className="w-10 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg py-1 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none uppercase text-blue-700 z-10 relative"
                             value={nomor.kode_masalah}
                             onChange={(e) => {
                               onItemDataChange(nomor.id, "kode_masalah", e.target.value);
-                              if (e.target.value.length === 2) inputRefs.current[`${nomor.id}-ks1-pc`]?.focus();
                             }}
+                            onFocus={(e) => {
+                              setActiveDropdownId(`${nomor.id}-pc`);
+                              // Auto scroll to make room for dropdown
+                              setTimeout(() => {
+                                e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+                              }, 100);
+                            }}
+                            onBlur={() => setTimeout(() => setActiveDropdownId(null), 200)}
                             placeholder="UM"
                             disabled={isExpired}
                           />
+                          {activeDropdownId === `${nomor.id}-pc` && (
+                            <div
+                              className="absolute top-full left-0 w-24 bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-1 overflow-hidden py-1 max-h-48 overflow-y-auto"
+                              style={{ zIndex: 9999 }}
+                            >
+                              {["UM", "GR", "SA", "TI", "KU"].map((opt) => (
+                                <div
+                                  key={opt}
+                                  className="px-3 py-2 text-xs font-bold text-gray-700 hover:bg-blue-50 cursor-pointer text-center border-b border-gray-50 last:border-0"
+                                  onClick={() => {
+                                    onItemDataChange(nomor.id, "kode_masalah", opt);
+                                    setActiveDropdownId(null);
+                                    inputRefs.current[`${nomor.id}-ks1-pc`]?.focus();
+                                  }}
+                                >
+                                  {opt}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                           <span className="font-bold text-gray-300">.</span>
                           <input
                             ref={(el) => (inputRefs.current[`${nomor.id}-ks1-pc`] = el)}
@@ -272,7 +337,12 @@ export default function ReservedNumbersList({
                             value={nomor.kode_submasalah1}
                             onChange={(e) => {
                               onItemDataChange(nomor.id, "kode_submasalah1", e.target.value);
-                              if (e.target.value.length >= 2) inputRefs.current[`${nomor.id}-ks2-pc`]?.focus();
+                            }}
+                            onFocus={(e) => {
+                              if (nomor.kode_submasalah1 === "01") {
+                                onItemDataChange(nomor.id, "kode_submasalah1", "");
+                              }
+                              e.target.select();
                             }}
                             placeholder="01"
                             disabled={isExpired}
@@ -285,6 +355,12 @@ export default function ReservedNumbersList({
                             className="w-8 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg py-1 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none text-blue-700"
                             value={nomor.kode_submasalah2}
                             onChange={(e) => onItemDataChange(nomor.id, "kode_submasalah2", e.target.value)}
+                            onFocus={(e) => {
+                              if (nomor.kode_submasalah2 === "01") {
+                                onItemDataChange(nomor.id, "kode_submasalah2", "");
+                              }
+                              e.target.select();
+                            }}
                             placeholder="01"
                             disabled={isExpired}
                           />

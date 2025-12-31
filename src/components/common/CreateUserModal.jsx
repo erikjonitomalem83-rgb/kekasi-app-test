@@ -241,13 +241,13 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdm
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+        <div className="sticky top-0 bg-[#16a34a] border-b border-white/10 px-6 py-4 rounded-t-xl">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-800">Buat Akun Baru</h2>
+            <h2 className="text-xl font-bold text-white">Buat Akun Baru</h2>
             <button
               onClick={handleClose}
               disabled={isSubmitting}
-              className="text-gray-500 hover:text-gray-700 transition disabled:opacity-50"
+              className="text-white hover:bg-white/10 transition disabled:opacity-50 rounded-full p-2"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -361,8 +361,8 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdm
             </div>
           )}
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-xs text-blue-800">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-left">
+            <p className="text-xs text-green-800">
               <strong>Info:</strong> Password default adalah <strong>Password123!</strong>
               <br />
               User dapat mengganti password setelah login pertama kali.
@@ -381,7 +381,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdm
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
             >
               {isSubmitting ? "Membuat..." : "Buat Akun"}
             </button>

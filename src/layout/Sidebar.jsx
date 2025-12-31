@@ -131,9 +131,9 @@ export default function Sidebar({
 
             {/* Emergency Pool Section */}
             {isAdmin && (
-              <div className="mx-4 my-6 p-4 bg-purple-50 rounded-2xl border border-purple-100 shadow-sm">
+              <div className="mx-4 my-6 p-4 bg-[#efbc62]/10 rounded-2xl border border-[#efbc62] shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-bold text-purple-900 uppercase">Emergency Pool</h3>
+                  <h3 className="text-xs font-bold text-[#00325f] uppercase">Emergency Pool</h3>
                   <div className="flex gap-1">
                     <span
                       className={`w-2 h-2 rounded-full animate-pulse ${
@@ -148,13 +148,13 @@ export default function Sidebar({
                     adminPool.map((nomor) => (
                       <span
                         key={nomor.id}
-                        className="px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded-lg shadow-sm"
+                        className="px-2 py-1 bg-[#efbc62] text-[#00325f] text-xs font-bold rounded-lg shadow-sm border border-[#efbc62]/20"
                       >
                         {nomor.nomor_urut}
                       </span>
                     ))
                   ) : (
-                    <span className="text-[10px] text-purple-400 italic font-medium">Pool Kosong</span>
+                    <span className="text-xs text-[#00325f] italic font-medium">Pool Kosong</span>
                   )}
                 </div>
 
@@ -162,31 +162,31 @@ export default function Sidebar({
                   <button
                     onClick={onAmbilEmergency}
                     disabled={isSubmitting || adminPool.length === 0}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-[11px] font-bold transition shadow-sm disabled:opacity-50"
+                    className="w-full bg-[#efbc62] hover:brightness-105 text-[#00325f] py-2 rounded-lg text-[11px] font-bold transition shadow-sm disabled:opacity-50"
                   >
                     Ambil Nomor
                   </button>
                   <button
                     onClick={onGeneratePoolManual}
                     disabled={isSubmitting}
-                    className="w-full bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg text-[11px] font-bold transition shadow-sm disabled:opacity-50"
+                    className="w-full bg-white hover:bg-[#efbc62]/10 text-[#00325f] border border-[#efbc62] py-2 rounded-lg text-[11px] font-bold transition shadow-sm disabled:opacity-50"
                   >
                     Generate Pool
                   </button>
                 </div>
 
-                {/* Compact Schedule Info */}
+                {/* Schedule Info - More Visible */}
                 {adminPoolSchedule && (
-                  <div className="mt-4 pt-3 border-t border-purple-100">
-                    <p className="text-[9px] font-bold text-gray-500 uppercase mb-2">Jadwal Otomatis</p>
-                    <div className="flex gap-1">
+                  <div className="mt-4 pt-3 border-t border-[#efbc62]/30">
+                    <p className="text-[11px] font-bold text-[#00325f] uppercase mb-2 tracking-wide">Jadwal Otomatis</p>
+                    <div className="flex gap-1.5">
                       {adminPoolSchedule.scheduled_dates.map((date) => (
                         <span
                           key={date}
-                          className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                          className={`px-2.5 py-1 rounded-lg text-sm font-bold shadow-sm ${
                             new Date().getDate() === date
-                              ? "bg-purple-600 text-white"
-                              : "bg-white text-purple-600 border border-purple-100"
+                              ? "bg-[#efbc62] text-[#00325f] ring-2 ring-[#efbc62]/50"
+                              : "bg-white text-[#00325f] border border-[#efbc62]"
                           }`}
                         >
                           {date}

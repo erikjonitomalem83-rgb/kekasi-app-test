@@ -81,10 +81,12 @@ export default function AdminEmergencyPool({
       </div>
 
       {/* ADMIN EMERGENCY POOL INFO */}
-      <div className="mb-6 bg-purple-50 border-y-2 md:border-2 border-purple-300 rounded-none md:rounded-lg p-3 md:p-6">
-        <h3 className="text-sm md:text-lg font-bold mb-2" style={{ color: "#00325f" }}>
-          Nomor Emergency Bulan Ini ({new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })})
-        </h3>
+      <div className="mb-6 bg-[#efbc62]/10 border-y-2 md:border-2 border-[#efbc62] rounded-none md:rounded-lg p-3 md:p-6 shadow-sm overflow-hidden">
+        <div className="bg-[#efbc62] -mx-3 md:-mx-6 -mt-3 md:-mt-6 px-3 md:px-6 py-2 mb-4 border-b border-[#efbc62]/20">
+          <h3 className="text-sm md:text-lg font-bold" style={{ color: "#00325f" }}>
+            Nomor Emergency Bulan Ini ({new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })})
+          </h3>
+        </div>
 
         <p className="text-[11px] md:text-sm text-gray-700 mb-2">Nomor yang disisihkan untuk keperluan urgent admin:</p>
 

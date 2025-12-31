@@ -135,13 +135,15 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, curren
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
+        <div className="bg-[#efbc62] px-6 py-4 rounded-t-xl border-b border-[#efbc62]/20">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-white">Ganti Password</h2>
+            <h2 className="text-xl font-bold" style={{ color: "#00325f" }}>
+              Ganti Password
+            </h2>
             <button
               onClick={handleClose}
               disabled={isSubmitting}
-              className="text-white hover:text-gray-200 transition disabled:opacity-50"
+              className="text-[#00325f] hover:opacity-70 transition disabled:opacity-50 p-2 rounded-full"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -321,7 +323,7 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, curren
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-[#efbc62] text-[#00325f] rounded-lg font-bold hover:brightness-105 transition disabled:opacity-50"
             >
               {isSubmitting ? "Mengubah..." : "Ubah Password"}
             </button>
