@@ -27,7 +27,11 @@ export default function DashboardHeader({
         borderBottomRightRadius: hideActions ? "0px" : window.innerWidth < 768 ? "0px" : "20px",
       }}
     >
-      <div className="container mx-auto px-4 md:px-6 py-2 flex justify-between items-center h-16">
+      <div
+        className={`container mx-auto ${
+          hideActions ? "pl-14 pr-4" : "px-4"
+        } md:px-6 py-2 flex justify-between items-center h-16`}
+      >
         {!hideActions ? (
           <div className="flex flex-col items-center">
             <div className="relative">

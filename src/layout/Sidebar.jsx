@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LogoK from "../assets/images/Logo_K.svg";
+import LogoKekasi from "../assets/images/Logo_KEKASI.svg";
 
 export default function Sidebar({
   isAdmin,
@@ -96,12 +96,8 @@ export default function Sidebar({
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="p-6 border-b flex items-center gap-3 bg-gradient-to-r from-gray-50 to-white">
-            <img src={LogoK} alt="Logo" className="w-10 h-10" />
-            <div>
-              <h1 className="font-bold text-gray-800 text-lg">KEKASI</h1>
-              <p className="text-[10px] text-gray-500 leading-tight">Menu Navigasi</p>
-            </div>
+          <div className="p-6 border-b flex items-center justify-center bg-gradient-to-r from-gray-50 to-white">
+            <img src={LogoKekasi} alt="Logo KEKASI" className="w-32 h-auto object-contain" />
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar">
