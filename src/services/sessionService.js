@@ -71,7 +71,7 @@ export async function createSession(userId) {
     }
 
     // STEP 3: Insert session baru
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("user_sessions")
       .insert({
         user_id: userId,

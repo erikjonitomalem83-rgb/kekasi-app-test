@@ -64,7 +64,6 @@ export async function login(username, password) {
     }
 
     // 3. Gunakan email asli dari database untuk Supabase Auth
-    const authEmail = userData.email;
 
     // 4. Create auth result dari database user (skip Supabase Auth)
     console.log("Creating auth result from database user");

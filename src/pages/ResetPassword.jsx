@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { validateResetToken, resetPassword } from "../services/passwordResetService";
+import { resetPassword } from "../services/passwordResetService";
 import { useNotification } from "../components/common/Notification";
 
 export default function ResetPassword() {

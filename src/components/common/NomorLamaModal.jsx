@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../services/supabase";
 
 export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, userId, notification }) {
@@ -70,49 +70,52 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
       setFilterBulan("");
       setSearchNomor("");
     }
-  }, [isOpen]);
+  }, [isOpen, currentYear, loadNomorLama]);
 
-  const loadNomorLama = async (tahun, bulan, nomorSearch) => {
-    setLoading(true);
-    setCurrentPage(1); // Reset page on filter
-    try {
-      const today = new Date().toISOString().split("T")[0];
+  const loadNomorLama = useCallback(
+    async (tahun, bulan, nomorSearch) => {
+      setLoading(true);
+      setCurrentPage(1); // Reset page on filter
+      try {
+        const today = new Date().toISOString().split("T")[0];
 
-      let query = supabase
-        .from("nomor_surat")
-        .select("*")
-        .eq("tahun", tahun)
-        .eq("status", "cancelled")
-        .is("keterangan", null)
-        .lt("tanggal", today); // Exclude nomor hari ini
+        let query = supabase
+          .from("nomor_surat")
+          .select("*")
+          .eq("tahun", tahun)
+          .eq("status", "cancelled")
+          .is("keterangan", null)
+          .lt("tanggal", today); // Exclude nomor hari ini
 
-      // Filter bulan (opsional)
-      if (bulan) {
-        const startOfMonth = `${tahun}-${bulan}-01`;
-        const nextMonth = new Date(`${tahun}-${bulan}-01`);
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
-        const endOfMonth = nextMonth.toISOString().split("T")[0];
+        // Filter bulan (opsional)
+        if (bulan) {
+          const startOfMonth = `${tahun}-${bulan}-01`;
+          const nextMonth = new Date(`${tahun}-${bulan}-01`);
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          const endOfMonth = nextMonth.toISOString().split("T")[0];
 
-        query = query.gte("tanggal", startOfMonth).lt("tanggal", endOfMonth);
+          query = query.gte("tanggal", startOfMonth).lt("tanggal", endOfMonth);
+        }
+
+        // Filter search nomor urut (opsional)
+        if (nomorSearch) {
+          query = query.eq("nomor_urut", parseInt(nomorSearch));
+        }
+
+        const { data, error } = await query.order("nomor_urut", { ascending: true }).limit(100);
+
+        if (error) throw error;
+
+        setNomorList(data || []);
+      } catch (error) {
+        console.error("Error load nomor lama:", error);
+        notification.showErrorToast("Error", "Gagal memuat nomor lama: " + error.message);
+      } finally {
+        setLoading(false);
       }
-
-      // Filter search nomor urut (opsional)
-      if (nomorSearch) {
-        query = query.eq("nomor_urut", parseInt(nomorSearch));
-      }
-
-      const { data, error } = await query.order("nomor_urut", { ascending: true }).limit(100);
-
-      if (error) throw error;
-
-      setNomorList(data || []);
-    } catch (error) {
-      console.error("Error load nomor lama:", error);
-      notification.showErrorToast("Error", "Gagal memuat nomor lama: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [notification]
+  ); // notification comes from props, stable if passed correctly or if it's a stable object.
 
   // Handle filter change
   const handleFilterChange = () => {

@@ -1,51 +1,61 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+// @ts-nocheck
+// Remove old serve import to resolve module not found error in IDE
+// import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-serve(async (req)=>{
-  console.log('[EDGE_FUNCTION] Request received');
+
+Deno.serve(async (req: Request) => {
+  console.log("[EDGE_FUNCTION] Request received");
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, {
-      headers: corsHeaders
+      headers: corsHeaders,
     });
   }
   try {
     const { email, nama_lengkap, resetLink } = await req.json();
-    console.log('[EDGE_FUNCTION] Request body:', {
+    console.log("[EDGE_FUNCTION] Request body:", {
       email,
-      nama_lengkap
+      nama_lengkap,
     });
     if (!email || !resetLink) {
-      console.error('[EDGE_FUNCTION] Missing required fields');
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Email and resetLink are required'
-      }), {
-        status: 400,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json'
+      console.error("[EDGE_FUNCTION] Missing required fields");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Email and resetLink are required",
+        }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
     }
     if (!RESEND_API_KEY) {
-      console.error('[EDGE_FUNCTION] RESEND_API_KEY not configured');
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Email service not configured'
-      }), {
-        status: 500,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json'
+      console.error("[EDGE_FUNCTION] RESEND_API_KEY not configured");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Email service not configured",
+        }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
     }
-    console.log('[EDGE_FUNCTION] Calling Resend API');
-    const emailSubject = 'Reset Password - KEKASI';
+    console.log("[EDGE_FUNCTION] Calling Resend API");
+    const emailSubject = "Reset Password - KEKASI";
     const emailContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
@@ -89,58 +99,66 @@ serve(async (req)=>{
         </div>
       </div>
     `;
-    const resendResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${RESEND_API_KEY}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'KEKASI <onboarding@resend.dev>',
+        from: "KEKASI <onboarding@resend.dev>",
         to: email,
         subject: emailSubject,
-        html: emailContent
-      })
+        html: emailContent,
+      }),
     });
     const responseData = await resendResponse.json();
-    console.log('[EDGE_FUNCTION] Resend response status:', resendResponse.status);
+    console.log("[EDGE_FUNCTION] Resend response status:", resendResponse.status);
     if (!resendResponse.ok) {
-      console.error('[EDGE_FUNCTION] Resend API error:', responseData);
-      return new Response(JSON.stringify({
-        success: false,
-        error: responseData.message || 'Failed to send email'
-      }), {
-        status: resendResponse.status,
+      console.error("[EDGE_FUNCTION] Resend API error:", responseData);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: responseData.message || "Failed to send email",
+        }),
+        {
+          status: resendResponse.status,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+    console.log("[EDGE_FUNCTION] Email sent successfully, ID:", responseData.id);
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Email reset password berhasil dikirim",
+        emailId: responseData.id,
+      }),
+      {
+        status: 200,
         headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
-      });
-    }
-    console.log('[EDGE_FUNCTION] Email sent successfully, ID:', responseData.id);
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'Email reset password berhasil dikirim',
-      emailId: responseData.id
-    }), {
-      status: 200,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json'
+          "Content-Type": "application/json",
+        },
       }
-    });
-  } catch (error) {
-    console.error('[EDGE_FUNCTION] Exception caught:', error);
-    console.error('[EDGE_FUNCTION] Error message:', error.message);
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message || 'Internal server error'
-    }), {
-      status: 500,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json'
+    );
+  } catch (error: any) {
+    console.error("[EDGE_FUNCTION] Exception caught:", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message || "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
   }
 });
