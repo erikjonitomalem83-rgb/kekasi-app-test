@@ -55,23 +55,6 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
 
   const bulanOptions = getAvailableMonths();
 
-  // Load nomor lama saat modal dibuka
-  useEffect(() => {
-    if (isOpen) {
-      // Default: tahun berjalan dulu (untuk ambil nomor hari sebelumnya di tahun ini)
-      setFilterTahun(String(currentYear));
-      setCurrentPage(1);
-      loadNomorLama(String(currentYear), "", "");
-    } else {
-      // Reset saat modal ditutup
-      setSelectedNomor([]);
-      setKeterangan("");
-      setNomorList([]);
-      setFilterBulan("");
-      setSearchNomor("");
-    }
-  }, [isOpen, currentYear, loadNomorLama]);
-
   const loadNomorLama = useCallback(
     async (tahun, bulan, nomorSearch) => {
       setLoading(true);
@@ -116,6 +99,23 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
     },
     [notification]
   ); // notification comes from props, stable if passed correctly or if it's a stable object.
+
+  // Load nomor lama saat modal dibuka
+  useEffect(() => {
+    if (isOpen) {
+      // Default: tahun berjalan dulu (untuk ambil nomor hari sebelumnya di tahun ini)
+      setFilterTahun(String(currentYear));
+      setCurrentPage(1);
+      loadNomorLama(String(currentYear), "", "");
+    } else {
+      // Reset saat modal ditutup
+      setSelectedNomor([]);
+      setKeterangan("");
+      setNomorList([]);
+      setFilterBulan("");
+      setSearchNomor("");
+    }
+  }, [isOpen, currentYear, loadNomorLama]);
 
   // Handle filter change
   const handleFilterChange = () => {
