@@ -28,8 +28,8 @@ const NomorSuratForm = ({
   }, []);
 
   return (
-    <div className="bg-white p-4 md:p-6 rounded-none md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200">
-      <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold mb-3">
+    <div className="bg-white p-4 md:p-6 rounded md:rounded-xl shadow-sm md:shadow-md border-y md:border border-gray-200 max-w-sm md:max-w-lg mx-auto">
+      <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-bold mb-3 text-center">
         Pesan Nomor Surat
       </h2>
 
@@ -88,7 +88,7 @@ const NomorSuratForm = ({
                 {label} <span className="text-red-500">*</span>
               </label>
               <input
-                className={`w-full px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base
+                className={`w-full px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base
                 focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                 ${formErrors[key] ? "border-red-500" : ""}`}
                 value={formData[key]}
@@ -108,7 +108,7 @@ const NomorSuratForm = ({
             </label>
             <div className="relative">
               <input
-                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base pr-8
+                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base pr-8
                   focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                   ${formErrors.kodeMasalah ? "border-red-500" : ""}`}
                 maxLength="2"
@@ -140,7 +140,7 @@ const NomorSuratForm = ({
               </button>
             </div>
             {showMasalahDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg overflow-hidden max-h-48 overflow-y-auto">
                 {problems.map((prob) => (
                   <button
                     key={prob}
@@ -175,7 +175,7 @@ const NomorSuratForm = ({
                 {label} {!optional && <span className="text-red-500">*</span>}
               </label>
               <input
-                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg box-border uppercase text-xs md:text-base
+                className={`w-full px-2 md:px-3 py-2 border border-gray-300 rounded box-border uppercase text-xs md:text-base
                   focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
                   ${formErrors[key] ? "border-red-500" : ""}`}
                 maxLength="2"
@@ -199,31 +199,65 @@ const NomorSuratForm = ({
         </div>
 
         <div className="grid grid-cols-2 gap-4 md:gap-6">
-          <div>
-            <label className="block text-[11px] md:text-sm font-semibold text-gray-700 mb-1 text-left">
+          <div className="col-span-2">
+            <label className="block text-[11px] md:text-sm font-semibold text-gray-700 mb-2 text-center">
               Jumlah Nomor <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              className={`w-full px-3 py-2 border border-gray-300 rounded-lg box-border text-xs md:text-base
-              focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150
-              ${formErrors.jumlahNomor ? "border-red-500" : ""}`}
-              value={formData.jumlahNomor}
-              min="1"
-              max="50"
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "" || value === null) {
-                  onInputChange("jumlahNomor", "");
-                } else {
-                  const numValue = parseInt(value);
-                  if (!isNaN(numValue)) {
-                    onInputChange("jumlahNomor", numValue);
-                  }
+            <div className="flex items-center justify-center gap-1">
+              <button
+                type="button"
+                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#2d333d] text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                onClick={() => {
+                  const currentVal = parseInt(formData.jumlahNomor) || 1;
+                  if (currentVal > 1) onInputChange("jumlahNomor", currentVal - 1);
+                }}
+                disabled={
+                  isSubmitting ||
+                  (reservedNumbers && reservedNumbers.length > 0) ||
+                  (parseInt(formData.jumlahNomor) || 1) <= 1
                 }
-              }}
-              disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
-            />
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
+                </svg>
+              </button>
+
+              <input
+                type="number"
+                className="w-12 h-10 md:w-14 md:h-12 text-center text-lg md:text-xl font-bold text-gray-800 bg-white border-2 border-gray-200 rounded-none focus:outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                value={formData.jumlahNomor}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "") {
+                    onInputChange("jumlahNomor", "");
+                  } else {
+                    const num = parseInt(val);
+                    if (!isNaN(num)) {
+                      onInputChange("jumlahNomor", Math.max(1, Math.min(50, num)));
+                    }
+                  }
+                }}
+                disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
+              />
+
+              <button
+                type="button"
+                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#2d333d] text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                onClick={() => {
+                  const currentVal = parseInt(formData.jumlahNomor) || 1;
+                  if (currentVal < 50) onInputChange("jumlahNomor", currentVal + 1);
+                }}
+                disabled={
+                  isSubmitting ||
+                  (reservedNumbers && reservedNumbers.length > 0) ||
+                  (parseInt(formData.jumlahNomor) || 1) >= 50
+                }
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </div>
             {formErrors.jumlahNomor && <p className="text-xs text-red-600 mt-1">{formErrors.jumlahNomor}</p>}
           </div>
         </div>
@@ -233,7 +267,7 @@ const NomorSuratForm = ({
             Keterangan (Opsional)
           </label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg box-border resize-none text-xs md:text-base
+            className="w-full px-3 py-2 border border-gray-300 rounded box-border resize-none text-xs md:text-base
             focus:outline-none focus:border-gray-300 focus:shadow-[inset_0_0_0_2px_#efbc62] transition-all duration-150"
             rows="2"
             placeholder="Contoh: Surat perjalanan dinas 3 pegawai"
@@ -250,25 +284,30 @@ const NomorSuratForm = ({
               (reservedNumbers && reservedNumbers.length > 0) ||
               (lockStatus.isLocked && lockStatus.lockedByUserId !== profile.id)
             }
-            className="w-full sm:flex-1 font-semibold py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            style={{
-              backgroundColor: "#efbc62",
-              color: "#00325f",
-            }}
+            className="w-full sm:flex-[2] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm tracking-tight bg-[#efbc62] text-[#00325f] hover:brightness-105"
           >
-            {isSubmitting
-              ? "Memproses..."
-              : reservedNumbers && reservedNumbers.length > 0
-              ? "Tuntaskan Pesanan Nomor"
-              : lockStatus.isLocked && lockStatus.lockedByUserId !== profile.id
-              ? "Sistem Sedang Digunakan..."
-              : "Pesan Nomor Surat"}
+            <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="truncate">
+              {isSubmitting
+                ? "Memproses..."
+                : reservedNumbers && reservedNumbers.length > 0
+                ? "Tuntaskan Pesanan"
+                : lockStatus.isLocked && lockStatus.lockedByUserId !== profile.id
+                ? "Sedang Digunakan"
+                : "Pesan Nomor Surat"}
+            </span>
           </button>
           <button
             type="button"
             onClick={onShowNomorLama}
             disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
-            className="w-full sm:flex-1 bg-purple-600 text-white font-semibold py-2.5 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 text-sm"
+            className="w-full sm:flex-1 bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
           >
             Nomor Lama
           </button>
@@ -276,7 +315,7 @@ const NomorSuratForm = ({
             type="button"
             onClick={onReset}
             disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
-            className="w-full sm:flex-1 bg-gray-200 text-gray-800 font-semibold py-2.5 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 text-sm"
+            className="w-full sm:flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-xl hover:bg-gray-300 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
           >
             Reset Form
           </button>
