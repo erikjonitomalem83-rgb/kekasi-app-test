@@ -308,7 +308,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
               <button
                 onClick={handleFilterChange}
                 disabled={loading}
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+                className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-50"
               >
                 {loading ? "Memuat..." : "Terapkan Filter"}
               </button>
@@ -320,7 +320,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
             </div>
           ) : nomorList.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -340,12 +340,12 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
               {/* Info & Select All */}
               <div className="flex justify-between items-center mb-4">
                 <p className="text-sm text-gray-600">
-                  Ditemukan <span className="font-bold text-blue-600">{nomorList.length}</span> nomor | Dipilih:{" "}
+                  Ditemukan <span className="font-bold text-purple-600">{nomorList.length}</span> nomor | Dipilih:{" "}
                   <span className="font-bold text-green-600">{selectedNomor.length}</span>/10
                 </p>
                 <button
                   onClick={handleSelectAll}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-semibold"
+                  className="text-sm text-purple-600 hover:text-purple-800 font-semibold"
                   disabled={loading}
                 >
                   {selectedNomor.length === nomorList.length ? "Batal Pilih Semua" : "Pilih Semua (Max 10)"}
