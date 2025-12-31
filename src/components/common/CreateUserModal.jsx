@@ -277,7 +277,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdm
             />
           </div>
 
-          <div>
+          <div className="max-w-[300px] md:max-w-full mx-auto w-full">
             <label className="block text-sm font-semibold text-gray-700 mb-1 text-left">
               Username <span className="text-red-500">*</span>
             </label>
@@ -291,7 +291,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess, isSuperAdm
             />
           </div>
 
-          <div>
+          <div className="max-w-[300px] md:max-w-full mx-auto w-full">
             <label className="block text-sm font-semibold text-gray-700 mb-1 text-left">
               Nama Lengkap <span className="text-red-500">*</span>
             </label>

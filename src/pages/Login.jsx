@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 import { useNotification } from "../components/common/Notification";
 import ForgotPasswordModal from "../components/common/ForgotPasswordModal";
+import { detectBrowser, getBrowserMessage } from "../utils/browserDetection";
 import LogoKekasi from "../assets/images/Logo_KEKASI.svg";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 
@@ -52,6 +53,19 @@ export default function Login() {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    const browser = detectBrowser();
+    if (browser.blocked) {
+      const message = getBrowserMessage();
+
+      // Show blocking alert
+      alert(`⛔ ${message.title}\n\n${message.message}\n\nAnda akan diarahkan ke halaman download Chrome.`);
+
+      // Redirect to Chrome download
+      window.location.href = "https://www.google.com/chrome/";
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-kekasi-blue-600 via-kekasi-blue-500 to-kekasi-blue-400 relative overflow-hidden">
       {/* Decorative Background Elements */}
@@ -65,20 +79,22 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 sm:p-12 mx-4 max-w-[440px] w-full relative z-10 animate-slide-up border border-white">
+      <div className="card-elevated max-w-md w-full relative z-10 animate-slide-up">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-0">
-            <img src={LogoKekasi} alt="Logo KEKASI" className="h-14 sm:h-16 w-auto" />
+            <div className="bg-gradient-to-br from-kekasi-blue-50 to-white p-4 rounded-2xl shadow-soft">
+              <img src={LogoKekasi} alt="Logo KEKASI" className="h-16 w-auto" />
+            </div>
           </div>
 
           {/* <p className="text-sm text-gray-600 font-medium">Kantor Imigrasi Kelas II TPI Pematang Siantar</p> */}
-          <div className="mt-4 h-1.5 w-16 bg-gradient-to-r from-kekasi-yellow-500 to-kekasi-yellow-400 rounded-full mx-auto"></div>
+          <div className="mt-4 h-1 w-20 bg-gradient-to-r from-kekasi-yellow-500 to-kekasi-yellow-400 rounded-full mx-auto"></div>
         </div>
 
         {/* Error Message */}
         {errorMsg && (
-          <div className="bg-error-50 border-2 border-error-200 text-error-700 px-4 py-3 rounded-2xl mb-6 animate-fade-in shadow-sm">
+          <div className="bg-error-50 border-2 border-error-200 text-error-700 px-4 py-3 rounded-xl mb-6 animate-fade-in">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -93,10 +109,9 @@ export default function Login() {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Username Field */}
-          <div>
-            <label className="input-label flex items-center gap-2 mb-2">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="max-w-[300px] md:max-w-[380px] mx-auto w-full">
+            <label className="input-label flex items-center gap-2 mb-1">
               <User className="w-4 h-4 text-kekasi-blue-500" />
               Username
             </label>
@@ -106,7 +121,7 @@ export default function Login() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="input-field !normal-case bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-kekasi-blue-500 transition-all duration-200 py-3.5 rounded-2xl shadow-sm"
+                className="input-field !normal-case"
                 placeholder="Masukkan username"
                 required
                 disabled={isLoading}
@@ -114,9 +129,8 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Password Field */}
-          <div>
-            <label className="input-label flex items-center gap-2 mb-2">
+          <div className="max-w-[300px] md:max-w-[380px] mx-auto w-full">
+            <label className="input-label flex items-center gap-2 mb-1">
               <Lock className="w-4 h-4 text-kekasi-blue-500" />
               Password
             </label>
@@ -126,7 +140,7 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="input-field !normal-case pr-12 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-kekasi-blue-500 transition-all duration-200 py-3.5 rounded-2xl shadow-sm"
+                className="input-field !normal-case pr-12"
                 placeholder="Masukkan password"
                 required
                 disabled={isLoading}
@@ -143,23 +157,25 @@ export default function Login() {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full btn-primary py-4 text-base font-bold shadow-kekasi-glow rounded-xl hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="spinner-small"></span>
-                Memproses...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <Lock className="w-5 h-5" />
-                Login
-              </span>
-            )}
-          </button>
+          <div className="max-w-[300px] md:max-w-[380px] mx-auto w-full pt-6">
+            <button
+              type="submit"
+              className="w-full btn-primary py-3.5 text-base font-bold shadow-kekasi-glow"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="spinner-small"></span>
+                  Memproses...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <Lock className="w-5 h-5" />
+                  Login
+                </span>
+              )}
+            </button>
+          </div>
 
           {/* Forgot Password Link */}
           <div className="text-center pt-2">
