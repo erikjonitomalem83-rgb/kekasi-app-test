@@ -59,7 +59,9 @@ const NomorSuratForm = ({
                 />
               </svg>
               <div>
-                <p className="text-sm font-semibold text-orange-900">Hari ini adalah Hari Libur</p>
+                <p className="text-sm font-semibold text-orange-900">
+                  Hari ini adalah {dateWarning.dayType || "Hari Libur"}
+                </p>
                 <p className="text-xs text-orange-800 mt-1">
                   Nomor surat akan diarsipkan sebagai tanggal <strong>{dateWarning.effectiveDateFormatted}</strong>
                 </p>

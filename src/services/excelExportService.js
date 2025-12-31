@@ -22,7 +22,19 @@ export function generateRekapHarian(data, filters) {
   // STEP 2: Add Column Headers (Row 5)
   XLSX.utils.sheet_add_aoa(
     worksheet,
-    [["NO", "NO SURAT", "KODE SURAT", "TANGGAL SURAT", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS"]],
+    [
+      [
+        "NO",
+        "NO SURAT",
+        "KODE SURAT",
+        "TANGGAL SURAT",
+        "HAL/PERIHAL",
+        "PENGAMBIL NOMOR",
+        "SEKSI",
+        "STATUS",
+        "CATATAN ARSIP",
+      ],
+    ],
     { origin: "A5" }
   );
 
@@ -36,6 +48,7 @@ export function generateRekapHarian(data, filters) {
     nomor.user_nama || "-",
     nomor.user_seksi || "-",
     nomor.status.toUpperCase(),
+    getCatatanArsip(nomor),
   ]);
 
   XLSX.utils.sheet_add_aoa(worksheet, dataRows, { origin: "A6" });
@@ -68,15 +81,16 @@ export function generateRekapHarian(data, filters) {
     "PENGAMBIL NOMOR",
     "SEKSI",
     "STATUS",
+    "CATATAN ARSIP",
   ];
   const allData = [headers, ...dataRows];
-  worksheet["!cols"] = calculateColumnWidths(allData, [5, 12, 30, 18, 50, 25, 22, 12]);
+  worksheet["!cols"] = calculateColumnWidths(allData, [5, 12, 30, 18, 50, 25, 22, 12, 40]);
 
-  // STEP 6: Merge Header Cells
+  // STEP 6: Merge Header Cells (9 columns now: A-I)
   worksheet["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
-    { s: { r: 2, c: 0 }, e: { r: 2, c: 7 } },
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 8 } },
   ];
 
   // STEP 7: Apply Styles MANUALLY
@@ -97,8 +111,8 @@ export function generateRekapHarian(data, filters) {
     }
   });
 
-  // Style Column Headers Row 5
-  const headerCols = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  // Style Column Headers Row 5 (A-I for 9 columns)
+  const headerCols = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
   headerCols.forEach((col) => {
     const cellRef = `${col}5`;
     if (!worksheet[cellRef]) worksheet[cellRef] = { v: "", t: "s" };
@@ -266,7 +280,7 @@ export function generateRekapBulanan(data, filters) {
 
     XLSX.utils.sheet_add_aoa(
       detailSheet,
-      [["NO", "NO SURAT", "KODE SURAT", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS"]],
+      [["NO", "NO SURAT", "KODE SURAT", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS", "CATATAN ARSIP"]],
       { origin: "A4" }
     );
 
@@ -278,6 +292,7 @@ export function generateRekapBulanan(data, filters) {
       nomor.user_nama || "-",
       nomor.user_seksi || "-",
       nomor.status.toUpperCase(),
+      getCatatanArsip(nomor),
     ]);
 
     XLSX.utils.sheet_add_aoa(detailSheet, dateData, { origin: "A5" });
@@ -285,12 +300,21 @@ export function generateRekapBulanan(data, filters) {
     const detailLastRow = 5 + dateData.length - 1;
 
     // Calculate column widths based on content
-    const detailHeaders = ["NO", "NO SURAT", "KODE SURAT", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS"];
+    const detailHeaders = [
+      "NO",
+      "NO SURAT",
+      "KODE SURAT",
+      "HAL/PERIHAL",
+      "PENGAMBIL NOMOR",
+      "SEKSI",
+      "STATUS",
+      "CATATAN ARSIP",
+    ];
     const detailAllData = [detailHeaders, ...dateData];
-    detailSheet["!cols"] = calculateColumnWidths(detailAllData, [5, 12, 30, 50, 25, 22, 12]);
+    detailSheet["!cols"] = calculateColumnWidths(detailAllData, [5, 12, 30, 50, 25, 22, 12, 40]);
     detailSheet["!merges"] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
     ];
 
     ["A1", "A2"].forEach((cell) => {
@@ -302,7 +326,7 @@ export function generateRekapBulanan(data, filters) {
       }
     });
 
-    const detailCols = ["A", "B", "C", "D", "E", "F", "G"];
+    const detailCols = ["A", "B", "C", "D", "E", "F", "G", "H"];
     detailCols.forEach((col) => {
       const cellRef = `${col}4`;
       if (!detailSheet[cellRef]) detailSheet[cellRef] = { v: "", t: "s" };
@@ -465,7 +489,19 @@ export function generateRekapTahunan(data, filters) {
 
     XLSX.utils.sheet_add_aoa(
       detailSheet,
-      [["NO", "NO SURAT", "KODE SURAT", "TANGGAL", "HAL/PERIHAL", "PENGAMBIL NOMOR", "SEKSI", "STATUS"]],
+      [
+        [
+          "NO",
+          "NO SURAT",
+          "KODE SURAT",
+          "TANGGAL",
+          "HAL/PERIHAL",
+          "PENGAMBIL NOMOR",
+          "SEKSI",
+          "STATUS",
+          "CATATAN ARSIP",
+        ],
+      ],
       { origin: "A4" }
     );
 
@@ -478,6 +514,7 @@ export function generateRekapTahunan(data, filters) {
       nomor.user_nama || "-",
       nomor.user_seksi || "-",
       nomor.status.toUpperCase(),
+      getCatatanArsip(nomor),
     ]);
 
     XLSX.utils.sheet_add_aoa(detailSheet, monthData, { origin: "A5" });
@@ -494,13 +531,14 @@ export function generateRekapTahunan(data, filters) {
       "PENGAMBIL NOMOR",
       "SEKSI",
       "STATUS",
+      "CATATAN ARSIP",
     ];
     const monthAllData = [monthHeaders, ...monthData];
-    detailSheet["!cols"] = calculateColumnWidths(monthAllData, [5, 12, 30, 18, 50, 25, 22, 12]);
+    detailSheet["!cols"] = calculateColumnWidths(monthAllData, [5, 12, 30, 18, 50, 25, 22, 12, 40]);
 
     detailSheet["!merges"] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } },
     ];
 
     ["A1", "A2"].forEach((cell) => {
@@ -512,7 +550,7 @@ export function generateRekapTahunan(data, filters) {
       }
     });
 
-    const detailCols = ["A", "B", "C", "D", "E", "F", "G", "H"];
+    const detailCols = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     detailCols.forEach((col) => {
       const cellRef = `${col}4`;
       if (!detailSheet[cellRef]) detailSheet[cellRef] = { v: "", t: "s" };
@@ -551,6 +589,33 @@ function calculateSummary(data) {
     reserved: data.filter((n) => n.status === "reserved").length,
     cancelled: data.filter((n) => n.status === "cancelled").length,
   };
+}
+
+/**
+ * Generate catatan arsip jika nomor diambil di hari libur/weekend
+ * dan diarsipkan dengan tanggal mundur
+ */
+function getCatatanArsip(nomor) {
+  if (!nomor.reserved_at || !nomor.tanggal) return "-";
+
+  // Parse reserved_at (ISO string dengan timezone) ke local date
+  const reservedDate = new Date(nomor.reserved_at);
+  const reservedLocalDate = `${reservedDate.getFullYear()}-${String(reservedDate.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(reservedDate.getDate()).padStart(2, "0")}`;
+
+  // tanggal sudah dalam format YYYY-MM-DD
+  const arsipDate = nomor.tanggal;
+
+  // Jika tanggal reservasi berbeda dengan tanggal arsip
+  if (reservedLocalDate !== arsipDate) {
+    // Format tanggal untuk display
+    const reservedFormatted = formatDate(reservedLocalDate);
+    return `Diambil tgl ${reservedFormatted} (hari libur/weekend)`;
+  }
+
+  return "-";
 }
 
 function formatDate(dateString) {

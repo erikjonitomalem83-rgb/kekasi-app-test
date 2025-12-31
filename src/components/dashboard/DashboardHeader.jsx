@@ -52,7 +52,14 @@ export default function DashboardHeader({
           </div>
         ) : (
           <div className="flex items-center">
-            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-tight">
+            {/* Mobile: 2 baris */}
+            <p className="md:hidden ml-2 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-tight">
+              Kantor Imigrasi Kelas II TPI
+              <br />
+              Pematang Siantar
+            </p>
+            {/* Desktop/Tablet: 1 baris */}
+            <p className="hidden md:block text-xs font-bold text-gray-400 uppercase tracking-widest leading-tight">
               Kantor Imigrasi Kelas II TPI Pematang Siantar
             </p>
           </div>

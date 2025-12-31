@@ -25,7 +25,11 @@ export function useReservedNumbers(profile, isAdmin) {
   const loadAdminPoolSchedule = useCallback(async () => {
     if (!isAdmin) return;
     try {
-      const currentMonth = new Date().toISOString().substring(0, 7);
+      // Gunakan local time, BUKAN toISOString() yang mengkonversi ke UTC
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const currentMonth = `${year}-${month}`;
       const { data, error } = await supabase
         .from("admin_pool_schedule")
         .select("*")
@@ -77,11 +81,18 @@ export function useReservedNumbers(profile, isAdmin) {
     async (kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2) => {
       if (!isAdmin) return;
       try {
-        const currentMonth = new Date().toISOString().substring(0, 7);
+        // Gunakan local time, BUKAN toISOString() yang mengkonversi ke UTC
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const currentMonth = `${year}-${month}`;
         const startOfMonth = `${currentMonth}-01`;
-        const nextMonth = new Date(currentMonth + "-01");
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
-        const endOfMonth = nextMonth.toISOString().split("T")[0];
+
+        // Hitung akhir bulan dengan local time
+        const nextMonthDate = new Date(year, now.getMonth() + 1, 1);
+        const nextYear = nextMonthDate.getFullYear();
+        const nextMonthNum = String(nextMonthDate.getMonth() + 1).padStart(2, "0");
+        const endOfMonth = `${nextYear}-${nextMonthNum}-01`;
 
         const { data, error } = await supabase
           .from("nomor_surat")

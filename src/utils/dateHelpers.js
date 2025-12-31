@@ -38,19 +38,14 @@ export function getEffectiveWorkingDate(checkDate, holidays = []) {
 
 /**
  * Cek apakah hari ini adalah hari libur/weekend dan dapatkan info warning untuk UI.
- * Digunakan untuk menampilkan peringatan jika tanggal surat akan mundur ke tahun sebelumnya.
+ * Digunakan untuk menampilkan peringatan jika tanggal surat akan mundur.
  *
  * @param {Array<string>} holidays - Array berisi string tanggal libur (format YYYY-MM-DD)
- * @returns {Object} - { isHolidayOrWeekend, effectiveDate, effectiveDateFormatted, crossesYear }
+ * @returns {Object} - { isHolidayOrWeekend, effectiveDate, effectiveDateFormatted, crossesYear, showWarning, warningType }
  */
 export function getDateWarningInfo(holidays = []) {
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth(); // 0 = Januari
-
-  // Hanya tampilkan warning jika di awal tahun (Januari)
-  // karena hanya awal tahun yang bisa mundur ke tahun sebelumnya
-  const isJanuary = currentMonth === 0;
 
   // Cek apakah hari ini adalah hari kerja
   const todayYear = now.getFullYear();
@@ -89,11 +84,23 @@ export function getDateWarningInfo(holidays = []) {
   const [yy, mm, dd] = effectiveDate.split("-");
   const effectiveDateFormatted = `${parseInt(dd)} ${months[parseInt(mm) - 1]} ${yy}`;
 
+  // Tentukan nama hari untuk ditampilkan di warning
+  let dayType = "";
+  if (isHoliday) {
+    dayType = "Hari Libur";
+  } else if (dayOfWeek === 0) {
+    dayType = "Hari Minggu";
+  } else if (dayOfWeek === 6) {
+    dayType = "Hari Sabtu";
+  }
+
   return {
     isHolidayOrWeekend,
     effectiveDate,
     effectiveDateFormatted,
     crossesYear,
-    showWarning: isJanuary && crossesYear && isHolidayOrWeekend,
+    dayType,
+    // Tampilkan warning jika hari ini bukan hari kerja
+    showWarning: isHolidayOrWeekend,
   };
 }

@@ -26,7 +26,18 @@ async function allocateBatchNumbers(count, tahun = null) {
     // Extract nomor_urut dari hasil
     const allocatedNumbers = data.map((row) => row.nomor_urut);
 
-    console.log(`[allocateBatchNumbers] Allocated numbers for ${currentYear}:`, allocatedNumbers.join(", "));
+    console.log(
+      `[allocateBatchNumbers] Requested: ${count}, Received: ${allocatedNumbers.length} for year ${currentYear}`
+    );
+
+    // Warning jika database function mengembalikan kurang dari yang diminta
+    if (allocatedNumbers.length < count) {
+      console.warn(
+        `[allocateBatchNumbers] WARNING: Database only returned ${allocatedNumbers.length}/${count} numbers!`
+      );
+    }
+
+    console.log(`[allocateBatchNumbers] Allocated numbers:`, allocatedNumbers.join(", "));
 
     return allocatedNumbers;
   } catch (error) {
@@ -447,8 +458,11 @@ export async function reserveNomorBerurutan(userId, formData, jumlah) {
     console.log(`[reserveNomorBerurutan] Reused: ${actualReused}, Need new: ${sisaYangDibutuhkan}`);
 
     if (sisaYangDibutuhkan > 0) {
-      // ATOMIC ALLOCATION dengan advisory lock
-      const allocatedNumbers = await allocateBatchNumbers(sisaYangDibutuhkan);
+      // Sync sequence dulu sebelum allocate untuk memastikan tidak ada conflict
+      await syncNomorSequence(currentYear);
+
+      // ATOMIC ALLOCATION dengan advisory lock - pass currentYear untuk konsistensi
+      const allocatedNumbers = await allocateBatchNumbers(sisaYangDibutuhkan, currentYear);
 
       console.log(`[reserveNomorBerurutan] Allocated numbers:`, allocatedNumbers);
 
@@ -622,8 +636,11 @@ export async function reserveNomorAcak(userId, formData, jumlah) {
     console.log(`[reserveNomorAcak] Reused: ${actualReused}, Need new: ${sisaYangDibutuhkan}`);
 
     if (sisaYangDibutuhkan > 0) {
-      // ATOMIC ALLOCATION dengan advisory lock
-      const allocatedNumbers = await allocateBatchNumbers(sisaYangDibutuhkan);
+      // Sync sequence dulu sebelum allocate untuk memastikan tidak ada conflict
+      await syncNomorSequence(currentYear);
+
+      // ATOMIC ALLOCATION dengan advisory lock - pass currentYear untuk konsistensi
+      const allocatedNumbers = await allocateBatchNumbers(sisaYangDibutuhkan, currentYear);
 
       // Acak urutan nomor untuk mode acak
       const shuffledAllocated = allocatedNumbers.sort(() => Math.random() - 0.5);
@@ -775,9 +792,10 @@ export async function cancelNomorSurat(nomorId, userId) {
  * Sync sequence dengan database per tahun (dipanggil saat app start)
  * Mencegah nomor loncat setelah database dibersihkan
  */
-export async function syncNomorSequence() {
+export async function syncNomorSequence(tahun = null) {
   try {
-    const currentYear = new Date().getFullYear();
+    // Gunakan tahun yang diberikan atau fallback ke tahun saat ini
+    const currentYear = tahun || new Date().getFullYear();
     console.log(`[syncNomorSequence] Syncing sequence for year ${currentYear}...`);
 
     // Tambahkan delay kecil untuk menghindari race condition
