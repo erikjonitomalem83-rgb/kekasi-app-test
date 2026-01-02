@@ -595,6 +595,15 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                     <input
                                       type="text"
                                       maxLength="2"
+                                      value={editingData.kodeMasalah}
+                                      onChange={(e) =>
+                                        handleEditInputChange("kodeMasalah", e.target.value.toUpperCase())
+                                      }
+                                      className="w-10 px-1.5 py-1 border rounded text-xs"
+                                    />
+                                    <input
+                                      type="text"
+                                      maxLength="2"
                                       value={editingData.subMasalah1}
                                       onChange={(e) =>
                                         handleEditInputChange("subMasalah1", e.target.value.replace(/\D/g, ""))
