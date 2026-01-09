@@ -14,14 +14,9 @@ export function getEffectiveWorkingDate(checkDate, holidays = []) {
   const holidaySet = new Set(holidays);
 
   while (true) {
-    const dayOfWeek = current.getDay(); // 0 = Minggu, 6 = Sabtu
-
-    // GUNAKAN LOCAL TIME, JANGAN toISOString() (karena akan convert ke UTC)
-    // Masalah: 1 Jan 01:00 WIB (UTC+7) -> toISOString() jadi 31 Des 18:00 UTC
-    const year = current.getFullYear();
-    const month = String(current.getMonth() + 1).padStart(2, "0");
-    const day = String(current.getDate()).padStart(2, "0");
-    const dateString = `${year}-${month}-${day}`;
+    // GUNAKAN LOCAL parts (ASIA/JAKARTA)
+    const { yyyy, mm, dd, dayOfWeek } = getLocalParts(current);
+    const dateString = `${yyyy}-${mm}-${dd}`;
 
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     const isHoliday = holidaySet.has(dateString);
@@ -37,6 +32,50 @@ export function getEffectiveWorkingDate(checkDate, holidays = []) {
 }
 
 /**
+ * Utility to get accurate local date parts (Indonesia/GMT+7 context)
+ */
+export function getLocalParts(date = new Date()) {
+  const d = new Date(date);
+  // Force Asia/Jakarta timezone using Intl.DateTimeFormat
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+  });
+
+  const parts = formatter.formatToParts(d);
+  const getPart = (type) => parts.find((p) => p.type === type).value;
+
+  // Map short weekday to number (Sun=0, Mon=1, ..., Sat=6)
+  const dayNames = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+
+  return {
+    yyyy: getPart("year"),
+    mm: getPart("month"),
+    dd: getPart("day"),
+    dayOfWeek: dayNames[getPart("weekday")],
+  };
+}
+
+/**
+ * Returns YYYY-MM-DD based on local time
+ */
+export function getLocalDateString(date = new Date()) {
+  const { yyyy, mm, dd } = getLocalParts(date);
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/**
+ * Returns YYYY-MM based on local time
+ */
+export function getLocalMonthString(date = new Date()) {
+  const { yyyy, mm } = getLocalParts(date);
+  return `${yyyy}-${mm}`;
+}
+
+/**
  * Cek apakah hari ini adalah hari libur/weekend dan dapatkan info warning untuk UI.
  * Digunakan untuk menampilkan peringatan jika tanggal surat akan mundur.
  *
@@ -48,12 +87,9 @@ export function getDateWarningInfo(holidays = []) {
   const currentYear = now.getFullYear();
 
   // Cek apakah hari ini adalah hari kerja
-  const todayYear = now.getFullYear();
-  const todayMonth = String(now.getMonth() + 1).padStart(2, "0");
-  const todayDay = String(now.getDate()).padStart(2, "0");
-  const todayString = `${todayYear}-${todayMonth}-${todayDay}`;
+  const { yyyy, mm, dd, dayOfWeek } = getLocalParts(now);
+  const todayString = `${yyyy}-${mm}-${dd}`;
 
-  const dayOfWeek = now.getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
   const holidaySet = new Set(holidays);
   const isHoliday = holidaySet.has(todayString);
@@ -81,8 +117,8 @@ export function getDateWarningInfo(holidays = []) {
     "November",
     "Desember",
   ];
-  const [yy, mm, dd] = effectiveDate.split("-");
-  const effectiveDateFormatted = `${parseInt(dd)} ${months[parseInt(mm) - 1]} ${yy}`;
+  const [effYear, effMonth, effDay] = effectiveDate.split("-");
+  const effectiveDateFormatted = `${parseInt(effDay)} ${months[parseInt(effMonth) - 1]} ${effYear}`;
 
   // Tentukan nama hari untuk ditampilkan di warning
   let dayType = "";

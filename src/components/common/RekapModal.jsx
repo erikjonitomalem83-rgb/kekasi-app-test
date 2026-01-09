@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../services/supabase";
 import { generateRekapHarian, generateRekapBulanan, generateRekapTahunan } from "../../services/excelExportService";
+import { getLocalDateString, getLocalParts } from "../../utils/dateHelpers";
 
 function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
   const [loading, setLoading] = useState(false);
@@ -24,9 +25,10 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
   const itemsPerPage = 10;
   const [userList, setUserList] = useState([]);
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
-  const currentDate = new Date().toISOString().split("T")[0];
+  const { yyyy, mm } = getLocalParts();
+  const currentDate = getLocalDateString();
+  const currentYear = parseInt(yyyy);
+  const currentMonth = mm;
 
   const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
 

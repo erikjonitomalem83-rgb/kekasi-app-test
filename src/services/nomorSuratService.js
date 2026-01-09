@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { getEffectiveWorkingDate } from "../utils/dateHelpers";
+import { getEffectiveWorkingDate, getLocalDateString, getLocalMonthString } from "../utils/dateHelpers";
 import { getHolidays } from "./holidayService";
 
 /**
@@ -119,7 +119,7 @@ export async function cleanExpiredNomor() {
  */
 export async function ensureAdminPoolExists(kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2) {
   try {
-    const currentMonth = new Date().toISOString().substring(0, 7);
+    const currentMonth = getLocalMonthString();
     const startOfMonth = `${currentMonth}-01`;
     const nextMonth = new Date(currentMonth + "-01");
     nextMonth.setMonth(nextMonth.getMonth() + 1);
@@ -164,7 +164,7 @@ export async function ensureAdminPoolExists(kodeKanwil, kodeUPT, kodeMasalah, su
  */
 export async function createAdminReservedNumber(kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2, nomorUrut) {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const today = getLocalDateString();
     const expiredAt = new Date();
     expiredAt.setFullYear(expiredAt.getFullYear() + 30);
 
@@ -216,7 +216,7 @@ export async function createMultipleAdminReservedNumbers(
   baseNomor
 ) {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const today = getLocalDateString();
     const expiredAt = new Date();
     expiredAt.setFullYear(expiredAt.getFullYear() + 30);
 

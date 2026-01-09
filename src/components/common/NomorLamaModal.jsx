@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../services/supabase";
+import { getLocalDateString, getLocalParts } from "../../utils/dateHelpers";
 
 export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, userId, notification }) {
   const [loading, setLoading] = useState(false);
@@ -14,8 +15,9 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const { yyyy, mm } = getLocalParts();
+  const currentYear = parseInt(yyyy);
+  const currentMonth = parseInt(mm); // 1-12
 
   // Tahun: tahun berjalan dan 1 tahun ke belakang
   const availableYears = [currentYear, currentYear - 1];
@@ -60,7 +62,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
       setLoading(true);
       setCurrentPage(1); // Reset page on filter
       try {
-        const today = new Date().toISOString().split("T")[0];
+        const today = getLocalDateString();
 
         let query = supabase
           .from("nomor_surat")

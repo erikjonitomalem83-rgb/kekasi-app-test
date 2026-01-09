@@ -8,6 +8,7 @@ import {
   syncNomorSequence,
   cleanExpiredNomor as serviceCleanExpiredNomor,
 } from "../services/nomorSuratService";
+import { getLocalMonthString, getLocalParts } from "../utils/dateHelpers";
 import { unlockAudio } from "../utils/soundAlert";
 import { useNotification } from "../components/common/Notification";
 
@@ -25,11 +26,7 @@ export function useReservedNumbers(profile, isAdmin) {
   const loadAdminPoolSchedule = useCallback(async () => {
     if (!isAdmin) return;
     try {
-      // Gunakan local time, BUKAN toISOString() yang mengkonversi ke UTC
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const currentMonth = `${year}-${month}`;
+      const currentMonth = getLocalMonthString();
       const { data, error } = await supabase
         .from("admin_pool_schedule")
         .select("*")
@@ -81,15 +78,12 @@ export function useReservedNumbers(profile, isAdmin) {
     async (kodeKanwil, kodeUPT, kodeMasalah, subMasalah1, subMasalah2) => {
       if (!isAdmin) return;
       try {
-        // Gunakan local time, BUKAN toISOString() yang mengkonversi ke UTC
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const currentMonth = `${year}-${month}`;
+        const currentMonth = getLocalMonthString();
         const startOfMonth = `${currentMonth}-01`;
 
         // Hitung akhir bulan dengan local time
-        const nextMonthDate = new Date(year, now.getMonth() + 1, 1);
+        const { yyyy, mm } = getLocalParts();
+        const nextMonthDate = new Date(parseInt(yyyy), parseInt(mm), 1);
         const nextYear = nextMonthDate.getFullYear();
         const nextMonthNum = String(nextMonthDate.getMonth() + 1).padStart(2, "0");
         const endOfMonth = `${nextYear}-${nextMonthNum}-01`;
