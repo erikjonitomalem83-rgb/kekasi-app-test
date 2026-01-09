@@ -34,9 +34,29 @@ interface Combination extends NomorSurat {
   highest: number;
 }
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 serve(async (req: Request) => {
+  // 1. Handle CORS Preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
-    const { force } = await req.json().catch(() => ({ force: false }));
+    // 2. More robust JSON parsing
+    let force = false;
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        force = !!body.force;
+      } catch (e) {
+        console.warn("Failed to parse request body as JSON, defaulting force=false");
+      }
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -82,6 +102,7 @@ serve(async (req: Request) => {
         }),
         {
           headers: {
+            ...corsHeaders,
             "Content-Type": "application/json",
           },
         }
@@ -107,6 +128,7 @@ serve(async (req: Request) => {
         }),
         {
           headers: {
+            ...corsHeaders,
             "Content-Type": "application/json",
           },
         }
@@ -170,6 +192,7 @@ serve(async (req: Request) => {
         }),
         {
           headers: {
+            ...corsHeaders,
             "Content-Type": "application/json",
           },
         }
@@ -230,6 +253,7 @@ serve(async (req: Request) => {
             }),
             {
               headers: {
+                ...corsHeaders,
                 "Content-Type": "application/json",
               },
             }
@@ -326,6 +350,7 @@ serve(async (req: Request) => {
       }),
       {
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json",
         },
       }
@@ -341,6 +366,7 @@ serve(async (req: Request) => {
       {
         status: 500,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json",
         },
       }

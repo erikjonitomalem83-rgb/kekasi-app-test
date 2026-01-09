@@ -74,7 +74,7 @@ export const requestPasswordReset = async (email) => {
         console.error("[PASSWORD_RESET] Received HTML instead of JSON:", htmlText.substring(0, 500));
         return {
           success: false,
-          error: "Function endpoint tidak ditemukan atau error. Cek Netlify Function logs.",
+          error: "Function endpoint tidak ditemukan atau error. Cek Vercel Function logs.",
         };
       }
 
