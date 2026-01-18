@@ -216,7 +216,7 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 bg-[#9333ea] border-b border-white/10 flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Nomor Lama Tersedia</h2>
@@ -271,25 +271,37 @@ export default function NomorLamaModal({ isOpen, onClose, onReserveSuccess, user
 
             {/* Filter Bulan */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 text-left">Bulan (Opsional)</label>
+              <div className="flex items-center gap-1.5 mb-1">
+                <label className="text-sm font-semibold text-gray-700 text-left">Bulan (Opsional)</label>
+                <div className="group relative flex items-center">
+                  <svg className="w-3.5 h-3.5 text-blue-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="absolute bottom-full left-0 mb-2 w-56 p-2 bg-gray-800 text-white text-[10px] rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 leading-relaxed normal-case font-normal border border-gray-700">
+                    <p>Filter bulan hanya menampilkan bulan yang sudah tutup (bulan sebelumnya).</p>
+                    <p className="mt-1 text-blue-300">
+                      Untuk nomor di bulan berjalan, silakan gunakan pilihan "Semua Bulan".
+                    </p>
+                  </div>
+                </div>
+              </div>
               <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 bg-white"
                 value={filterBulan}
                 onChange={(e) => setFilterBulan(e.target.value)}
-                disabled={loading || bulanOptions.length === 0}
+                disabled={loading}
               >
-                <option value="">
-                  {bulanOptions.length === 0 ? "Tidak ada bulan tersedia" : "Semua Bulan yang Tersedia"}
-                </option>
+                <option value="">Semua Bulan</option>
                 {bulanOptions.map((bulan) => (
                   <option key={bulan.value} value={bulan.value}>
                     {bulan.label}
                   </option>
                 ))}
               </select>
-              {parseInt(filterTahun) === currentYear && bulanOptions.length === 0 && (
-                <p className="text-xs text-red-500 mt-1">Tidak ada bulan sebelumnya tersedia di tahun {currentYear}</p>
-              )}
             </div>
 
             {/* Search Nomor */}
