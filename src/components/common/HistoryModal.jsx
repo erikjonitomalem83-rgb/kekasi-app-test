@@ -17,6 +17,8 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
   const [filterYear, setFilterYear] = useState(String(currentYear));
   const [filterMonth, setFilterMonth] = useState(currentMonth);
+  const [filterUser, setFilterUser] = useState("");
+  const [userList, setUserList] = useState([]);
 
   const availableYears = [
     { value: "all", label: "Semua Tahun" },
@@ -80,7 +82,10 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
         query = query.eq("keterangan", "ADMIN_EMERGENCY_POOL");
       }
 
-      if (!isAdmin) {
+      // Filter by user (admin only)
+      if (isAdmin && filterUser) {
+        query = query.eq("user_id", filterUser);
+      } else if (!isAdmin) {
         query = query.eq("user_id", profile.id);
       }
 
@@ -127,12 +132,27 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
     }
   };
 
+  // Load user list for admin filter
+  const loadUserList = async () => {
+    if (!isAdmin) return;
+
+    try {
+      const { data, error } = await supabase.from("users").select("id, nama_lengkap").order("nama_lengkap");
+
+      if (error) throw error;
+      setUserList(data || []);
+    } catch (error) {
+      console.error("Error load user list:", error);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       loadHistory();
+      loadUserList();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, filterYear, filterMonth, sortBy, profile?.id, isAdmin, activeTab]);
+  }, [isOpen, filterYear, filterMonth, filterUser, sortBy, profile?.id, isAdmin, activeTab]);
 
   const handleStartEdit = (nomor) => {
     setEditingId(nomor.id);
@@ -398,7 +418,9 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
             </div>
 
             {/* Filter Dropdowns */}
-            <div className="grid grid-cols-3 gap-2 md:flex md:flex-row md:gap-3">
+            <div
+              className={`grid gap-2 md:flex md:flex-row md:gap-3 ${isAdmin ? "grid-cols-2 md:grid-cols-4" : "grid-cols-3"}`}
+            >
               <select
                 value={filterYear}
                 onChange={(e) => setFilterYear(e.target.value)}
@@ -433,48 +455,73 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                 <option value="nomor_asc">Kecil ke Besar</option>
                 <option value="nomor_desc">Besar ke Kecil</option>
               </select>
-            </div>
 
-            {/* Refresh Button - Full width on mobile, inline on desktop */}
-            <button
-              onClick={loadHistory}
-              disabled={loading}
-              className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition disabled:opacity-50 shadow-sm"
-            >
-              {loading ? (
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
+              {/* User Filter - Admin Only */}
+              {isAdmin && (
+                <select
+                  value={filterUser}
+                  onChange={(e) => setFilterUser(e.target.value)}
+                  className="px-2 md:px-3 py-2 border border-green-200 rounded-lg text-[10px] md:text-xs font-bold focus:outline-none focus:border-green-500 bg-white text-green-800"
+                >
+                  <option value="">Semua User</option>
+                  {userList.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.nama_lengkap}
+                    </option>
+                  ))}
+                </select>
               )}
-              <span>{loading ? "Memuat..." : "Refresh Data"}</span>
-            </button>
+            </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 px-6 py-4 overflow-y-auto">
+        {/* Static Preview Info Row - Matching RekapModal style */}
+        <div className="flex-shrink-0 px-4 md:px-6 py-2.5 md:py-3 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex justify-between items-center">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span className="text-xs md:text-sm font-semibold text-gray-700">Data Riwayat</span>
+            </div>
+            <button
+              type="button"
+              onClick={loadHistory}
+              disabled={loading}
+              className="flex items-center gap-1 px-2 py-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all disabled:opacity-50"
+              title="Refresh Data"
+            >
+              <svg
+                className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              <span className="text-[10px] md:text-xs font-medium">Refresh</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
+            <span className="text-[10px] md:text-xs text-blue-700 font-medium">Total:</span>
+            <span className="text-xs md:text-sm text-blue-700 font-bold">
+              {filteredData.length.toLocaleString("id-ID")}
+            </span>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 px-6 py-4 overflow-y-auto bg-gray-50/30">
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -497,19 +544,19 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
             </div>
           ) : (
             <>
-              <div className="mb-4 p-2.5 md:p-3 bg-blue-50 border border-blue-200 rounded-lg flex justify-between items-center">
-                <p className="text-xs md:text-sm font-bold" style={{ color: "#00325f" }}>
-                  Total: <span className="text-sm md:text-lg">{filteredData.length}</span> nomor
-                </p>
-                {searchQuery && (
+              {searchQuery && (
+                <div className="mb-4">
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="text-[10px] md:text-xs text-blue-600 font-bold hover:underline"
+                    className="text-[10px] md:text-xs text-blue-600 font-bold hover:underline flex items-center gap-1"
                   >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Reset Pencarian
                   </button>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Desktop View: Table */}
               <div className="hidden md:block overflow-x-auto">
@@ -745,14 +792,14 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                 })
                               : "-"
                             : nomor.reserved_at
-                            ? new Date(nomor.reserved_at).toLocaleString("id-ID", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
-                            : "-"}
+                              ? new Date(nomor.reserved_at).toLocaleString("id-ID", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : "-"}
                         </td>
 
                         {/* KOLOM AKSI - TOMBOL EDIT & DELETE (hanya di tab confirmed) */}
@@ -919,13 +966,13 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                               })
                             : "-"
                           : nomor.reserved_at
-                          ? new Date(nomor.reserved_at).toLocaleString("id-ID", {
-                              day: "2-digit",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "-"}
+                            ? new Date(nomor.reserved_at).toLocaleString("id-ID", {
+                                day: "2-digit",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
                       </div>
                     </div>
 
@@ -1026,71 +1073,100 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                   </div>
                 ))}
               </div>
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                  <p className="text-sm text-gray-600 font-medium text-left w-full md:w-auto">
-                    Halaman <span className="text-blue-600 font-bold">{currentPage}</span> dari{" "}
-                    <span className="text-gray-900 font-bold">{totalPages}</span>
-                  </p>
-                  <div className="flex items-center gap-1.5 w-full md:w-auto justify-center">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1 || loading}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Prev
-                    </button>
-
-                    <div className="flex items-center -space-x-px">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum;
-                        if (totalPages <= 5) pageNum = i + 1;
-                        else if (currentPage <= 3) pageNum = i + 1;
-                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                        else pageNum = currentPage - 2 + i;
-
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`w-9 h-9 flex items-center justify-center text-sm font-bold transition-all ${
-                              currentPage === pageNum
-                                ? "bg-blue-600 text-white z-10 border border-blue-600 shadow-md transform scale-110 rounded-lg"
-                                : "bg-white text-gray-600 border border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages || loading}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-300"
-                    >
-                      Next
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-t bg-gray-50 flex justify-end">
+        {/* Sticky Action Footer incorporating Pagination & Close */}
+        <div
+          className={`px-4 md:px-6 py-3 md:py-4 bg-white border-t border-gray-100 flex flex-row items-center gap-2 md:gap-4 bg-gray-50/80 flex-shrink-0 ${totalPages > 1 ? "justify-between" : "justify-end"}`}
+        >
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1 md:gap-1.5">
+              {/* Page Info - Hidden on small mobile */}
+              <p className="hidden sm:block text-xs md:text-sm text-gray-600 font-medium mr-2">
+                <span className="text-blue-600 font-bold">{currentPage}</span>/
+                <span className="text-gray-900 font-bold">{totalPages}</span>
+              </p>
+
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1 || loading}
+                className="p-1.5 md:px-2.5 md:py-2 bg-white border border-gray-300 rounded-lg text-[11px] font-bold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-30 shadow-sm"
+                title="First Page"
+              >
+                <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1 || loading}
+                className="p-1.5 md:px-3 md:py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 shadow-sm"
+              >
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <div className="hidden md:flex items-center -space-x-px">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) pageNum = i + 1;
+                  else if (currentPage <= 3) pageNum = i + 1;
+                  else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                  else pageNum = currentPage - 2 + i;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-9 h-9 flex items-center justify-center text-sm font-bold transition-all ${
+                        currentPage === pageNum
+                          ? "bg-blue-600 text-white z-10 border border-blue-600 shadow-md transform scale-105 rounded-lg"
+                          : "bg-white text-gray-600 border border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || loading}
+                className="p-1.5 md:px-3 md:py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-40 shadow-sm"
+              >
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || loading}
+                className="p-1.5 md:px-2.5 md:py-2 bg-white border border-gray-300 rounded-lg text-[11px] font-bold text-gray-700 hover:bg-gray-50 hover:border-blue-300 transition-all disabled:opacity-30 shadow-sm"
+                title="Last Page"
+              >
+                <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Close Button */}
           <button
             onClick={onClose}
-            className="w-full md:w-auto px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition text-sm md:text-base"
+            className="px-4 md:px-6 py-1.5 md:py-2 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition text-[11px] md:text-sm shadow-sm"
           >
             Tutup
           </button>
