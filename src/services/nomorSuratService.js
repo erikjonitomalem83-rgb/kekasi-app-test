@@ -955,18 +955,25 @@ export async function updateNomorSuratData(nomorId, updateData) {
         : `${updateData.kodeKanwil}.${updateData.kodeUPT}-${updateData.kodeMasalah}.${updateData.subMasalah1}-${nomorUrut}`;
 
     // Update data
+    const updatePayload = {
+      kode_kanwil: updateData.kodeKanwil.trim(),
+      kode_upt: updateData.kodeUPT.trim(),
+      kode_masalah: updateData.kodeMasalah.trim().toUpperCase(),
+      kode_submasalah1: updateData.subMasalah1.trim(),
+      kode_submasalah2: cleanSubMasalah2,
+      keterangan: updateData.keterangan.trim(),
+      nomor_lengkap: nomorLengkap,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only allow updating user_id if userId is provided in updateData
+    if (updateData.userId) {
+      updatePayload.user_id = updateData.userId;
+    }
+
     const { data, error } = await supabase
       .from("nomor_surat")
-      .update({
-        kode_kanwil: updateData.kodeKanwil.trim(),
-        kode_upt: updateData.kodeUPT.trim(),
-        kode_masalah: updateData.kodeMasalah.trim().toUpperCase(),
-        kode_submasalah1: updateData.subMasalah1.trim(),
-        kode_submasalah2: cleanSubMasalah2,
-        keterangan: updateData.keterangan.trim(),
-        nomor_lengkap: nomorLengkap,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", nomorId)
       .eq("status", "confirmed")
       .select()

@@ -55,6 +55,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
     subMasalah1: "",
     subMasalah2: "",
     keterangan: "",
+    userId: "",
   });
   const [editErrors, setEditErrors] = useState({});
 
@@ -137,7 +138,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
     if (!isAdmin) return;
 
     try {
-      const { data, error } = await supabase.from("users").select("id, nama_lengkap").order("nama_lengkap");
+      const { data, error } = await supabase.from("users").select("id, nama_lengkap, seksi").order("nama_lengkap");
 
       if (error) throw error;
       setUserList(data || []);
@@ -165,6 +166,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       subMasalah1: nomor.kode_submasalah1 || "",
       subMasalah2: nomor.kode_submasalah2 || "",
       keterangan: nomor.keterangan || "",
+      userId: nomor.user_id || "",
     });
     setEditErrors({});
   };
@@ -178,6 +180,7 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       subMasalah1: "",
       subMasalah2: "",
       keterangan: "",
+      userId: "",
     });
     setEditErrors({});
   };
@@ -261,20 +264,36 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
 
         // Update data lokal tanpa reload
         setHistoryData((prev) =>
-          prev.map((nomor) =>
-            nomor.id === nomorId
-              ? {
-                  ...nomor,
-                  kode_kanwil: editingData.kodeKanwil.trim(),
-                  kode_upt: editingData.kodeUPT.trim(),
-                  kode_masalah: editingData.kodeMasalah.trim().toUpperCase(),
-                  kode_submasalah1: editingData.subMasalah1.trim(),
-                  kode_submasalah2: editingData.subMasalah2.trim(),
-                  keterangan: editingData.keterangan.trim(),
-                  nomor_lengkap: result.data.nomor_lengkap,
+          prev.map((nomor) => {
+            if (nomor.id === nomorId) {
+              const updatedNomor = {
+                ...nomor,
+                kode_kanwil: editingData.kodeKanwil.trim(),
+                kode_upt: editingData.kodeUPT.trim(),
+                kode_masalah: editingData.kodeMasalah.trim().toUpperCase(),
+                kode_submasalah1: editingData.subMasalah1.trim(),
+                kode_submasalah2: editingData.subMasalah2.trim(),
+                keterangan: editingData.keterangan.trim(),
+                nomor_lengkap: result.data.nomor_lengkap,
+                user_id: editingData.userId,
+              };
+
+              // Update user object info if changed
+              if (editingData.userId) {
+                const newUser = userList.find((u) => u.id === editingData.userId);
+                if (newUser) {
+                  updatedNomor.users = {
+                    ...nomor.users,
+                    nama_lengkap: newUser.nama_lengkap,
+                    seksi: newUser.seksi,
+                  };
                 }
-              : nomor
-          )
+              }
+
+              return updatedNomor;
+            }
+            return nomor;
+          })
         );
 
         // Reset edit mode
@@ -677,6 +696,26 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                   </div>
                                 </div>
                               </div>
+                              {/* USER SELECTION - ADMIN ONLY */}
+                              {isAdmin && (
+                                <div>
+                                  <label className="block text-[10px] font-bold text-gray-700 mb-0.5 text-left">
+                                    Pemilik/User Nomor
+                                  </label>
+                                  <select
+                                    value={editingData.userId}
+                                    onChange={(e) => handleEditInputChange("userId", e.target.value)}
+                                    className="w-full px-2 py-1 border rounded text-xs bg-white font-semibold text-blue-800"
+                                  >
+                                    <option value="">Pilih User</option>
+                                    {userList.map((user) => (
+                                      <option key={user.id} value={user.id}>
+                                        {user.nama_lengkap}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
                               <div>
                                 <textarea
                                   value={editingData.keterangan}
