@@ -1083,6 +1083,26 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                               />
                             </div>
                           </div>
+                          {/* USER SELECTION - ADMIN ONLY */}
+                          {isAdmin && (
+                            <div>
+                              <label className="text-[10px] font-bold text-gray-400 uppercase">
+                                Pemilik/User Nomor
+                              </label>
+                              <select
+                                value={editingData.userId}
+                                onChange={(e) => handleEditInputChange("userId", e.target.value)}
+                                className="w-full p-1.5 bg-white border border-blue-200 rounded text-xs font-semibold text-blue-800"
+                              >
+                                <option value="">Pilih User</option>
+                                {userList.map((user) => (
+                                  <option key={user.id} value={user.id}>
+                                    {user.nama_lengkap}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                           <div>
                             <label className="text-[10px] font-bold text-gray-400 uppercase">Keterangan</label>
                             <textarea
