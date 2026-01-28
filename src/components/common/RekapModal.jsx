@@ -24,6 +24,7 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [userList, setUserList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { yyyy, mm } = getLocalParts();
   const currentDate = getLocalDateString();
@@ -49,8 +50,6 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
 
   // Load user list
   const loadUserList = useCallback(async () => {
-    if (!isAdmin) return;
-
     try {
       const { data, error } = await supabase.from("users").select("id, nama_lengkap").order("nama_lengkap");
 
@@ -59,7 +58,7 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
     } catch (error) {
       console.error("Error load user list:", error);
     }
-  }, [isAdmin]);
+  }, []);
 
   // Load preview data
   const loadPreviewData = useCallback(async () => {
@@ -123,8 +122,8 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
         return;
       }
 
-      // Filter by user (admin only)
-      if (isAdmin && filterUser) {
+      // Filter by user
+      if (filterUser) {
         query = query.eq("user_id", filterUser);
       }
 
@@ -159,7 +158,7 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
     } finally {
       setLoading(false);
     }
-  }, [jenisRekap, filterTanggal, filterBulan, filterTahun, filterStatus, isAdmin, filterUser, notification]);
+  }, [jenisRekap, filterTanggal, filterBulan, filterTahun, filterStatus, filterUser, notification]);
 
   // Initialize
   useEffect(() => {
@@ -168,10 +167,12 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
       setFilterBulan(currentMonth);
       setFilterTanggal(currentDate);
       setCurrentPage(1);
+      setSearchQuery("");
       loadUserList();
     } else {
       setPreviewData([]);
       setTotalData(0);
+      setSearchQuery("");
     }
   }, [isOpen, currentDate, currentMonth, currentYear, loadUserList]);
 
@@ -289,8 +290,8 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
         return;
       }
 
-      // Filter by user (admin only regular filter)
-      if (isAdmin && filterUser) {
+      // Filter by user
+      if (filterUser) {
         query = query.eq("user_id", filterUser);
       }
 
@@ -355,10 +356,19 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
     }
   };
 
+  // Filtering logic
+  const filteredData = (previewData || []).filter((item) => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    const nomorMatch = (item.nomor_lengkap || "").toLowerCase().includes(searchLower);
+    const keteranganMatch = (item.keterangan || "").toLowerCase().includes(searchLower);
+    return nomorMatch || keteranganMatch;
+  });
+
   // Pagination logic
-  const totalPages = Math.ceil(previewData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedPreviewData = previewData.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedPreviewData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   // Dynamic label for "Action By"
   const activeStatuses = [
@@ -490,34 +500,32 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
                 )}
 
                 {/* User Filter */}
-                {isAdmin && (
-                  <div
-                    className={`${jenisRekap === "harian" ? "col-span-1" : jenisRekap === "bulanan" ? "col-span-2 md:col-span-2" : "col-span-2 md:col-span-3"}`}
+                <div
+                  className={`${jenisRekap === "harian" ? "col-span-1" : jenisRekap === "bulanan" ? "col-span-2 md:col-span-2" : "col-span-2 md:col-span-3"}`}
+                >
+                  <select
+                    className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-gray-50/50"
+                    value={filterUser}
+                    onChange={(e) => setFilterUser(e.target.value)}
+                    disabled={loading}
                   >
-                    <select
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-gray-50/50"
-                      value={filterUser}
-                      onChange={(e) => setFilterUser(e.target.value)}
-                      disabled={loading}
-                    >
-                      <option value="">Semua User</option>
-                      {userList.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.nama_lengkap}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                    <option value="">Semua User</option>
+                    {userList.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.nama_lengkap}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Static Preview Info Row */}
-        <div className="flex-shrink-0 px-4 md:px-6 py-2.5 md:py-3 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex justify-between items-center">
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="flex items-center gap-1.5">
+        <div className="flex-shrink-0 px-4 md:px-6 py-2.5 md:py-3 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto">
+            <div className="flex items-center gap-1.5 whitespace-nowrap">
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -551,9 +559,59 @@ function RekapModal({ isOpen, onClose, notification, isAdmin, userId }) {
               <span className="text-[10px] md:text-xs font-medium">Refresh</span>
             </button>
           </div>
-          <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1 rounded-full border border-green-100">
-            <span className="text-[10px] md:text-xs text-green-700 font-medium">Total:</span>
-            <span className="text-xs md:text-sm text-green-700 font-bold">{totalData.toLocaleString("id-ID")}</span>
+
+          <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto overflow-hidden">
+            {/* Search Input - Fixed width for stability */}
+            <div className="relative group flex-1 md:flex-none md:w-[450px]">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg
+                  className="h-4 w-4 text-gray-400 group-focus-within:text-green-600 transition-colors duration-200"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Cari nomor / keterangan surat..."
+                className="block w-full pl-10 pr-12 py-2.5 border-2 border-gray-200 rounded-full text-xs font-semibold focus:border-green-600 outline-none transition-all duration-200 bg-white placeholder:text-gray-400 shadow-none focus:shadow-none"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                  }}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-green-600 transition-colors"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Total Badge - Fixed width to prevent shifting */}
+            <div className="flex-shrink-0 min-w-[85px] md:min-w-[100px] flex justify-end">
+              <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1 rounded-full border border-green-100 w-full justify-center">
+                <span className="text-[10px] md:text-xs text-green-700 font-medium">Total:</span>
+                <span className="text-xs md:text-sm text-green-700 font-bold whitespace-nowrap">
+                  {(searchQuery ? filteredData.length : totalData).toLocaleString("id-ID")}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 

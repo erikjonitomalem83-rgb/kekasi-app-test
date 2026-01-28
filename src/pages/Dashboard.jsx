@@ -26,6 +26,7 @@ import ProfileModal from "../components/common/ProfileModal";
 import HistoryModal from "../components/common/HistoryModal";
 import NomorLamaModal from "../components/common/NomorLamaModal";
 import RekapModal from "../components/common/RekapModal";
+import PathRekapModal from "../components/common/PathRekapModal";
 import UserListModal from "../components/common/UserListModal";
 import ConfirmationResumeModal from "../components/common/ConfirmationResumeModal";
 
@@ -51,6 +52,7 @@ export default function Dashboard() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showNomorLamaModal, setShowNomorLamaModal] = useState(false);
   const [showRekapModal, setShowRekapModal] = useState(false);
+  const [showPathRekapModal, setShowPathRekapModal] = useState(false);
   const [showUserListModal, setShowUserListModal] = useState(false);
   const [showHariLiburModal, setShowHariLiburModal] = useState(false);
   const [showConfirmationResumeModal, setShowConfirmationResumeModal] = useState(false);
@@ -409,6 +411,7 @@ export default function Dashboard() {
         onShowCreateUser={() => setShowCreateUserModal(true)}
         onShowUserList={() => setShowUserListModal(true)}
         onShowHoliday={() => setShowHariLiburModal(true)}
+        onShowPathRekap={() => setShowPathRekapModal(true)}
         onCleanExpired={cleanExpired}
         onShowProfile={() => setShowProfileModal(true)}
         // Emergency Pool
@@ -537,6 +540,7 @@ export default function Dashboard() {
         onClose={() => setShowHariLiburModal(false)}
         notification={notification}
       />
+      <PathRekapModal isOpen={showPathRekapModal} onClose={() => setShowPathRekapModal(false)} />
       <ConfirmationResumeModal
         isOpen={showConfirmationResumeModal}
         onClose={() => setShowConfirmationResumeModal(false)}
