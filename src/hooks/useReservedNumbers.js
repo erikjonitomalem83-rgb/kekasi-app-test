@@ -248,15 +248,6 @@ export function useReservedNumbers(profile, isAdmin) {
   };
 
   const confirmAll = async () => {
-    const kosong = reservedNumbers.filter((n) => !n.keterangan || n.keterangan.trim() === "");
-    if (kosong.length > 0) {
-      notification.showWarningToast(
-        "Keterangan Belum Lengkap",
-        `Ada ${kosong.length} nomor yang belum diisi keterangan!`
-      );
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const promises = reservedNumbers.map((nomor) => {

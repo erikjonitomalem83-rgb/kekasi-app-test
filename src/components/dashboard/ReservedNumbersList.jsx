@@ -381,7 +381,7 @@ export default function ReservedNumbersList({
                         required
                         autoComplete="off"
                         disabled={isExpired}
-                        placeholder={isExpired ? "Sesi berakhir" : "Keterangan nomor surat*"}
+                        placeholder={isExpired ? "Sesi berakhir" : "Keterangan (Opsional)"}
                         className="w-full px-3 md:px-4 py-1.5 md:py-2.5 bg-gray-50/30 border border-gray-200 rounded-xl text-[10px] md:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all placeholder:text-gray-300 shadow-inner"
                         onChange={(e) => onItemDataChange(nomor.id, "keterangan", e.target.value)}
                         onKeyDown={(e) => {

@@ -221,10 +221,6 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
       errors.subMasalah2 = "Harus 2 digit angka";
     }
 
-    if (!editingData.keterangan.trim()) {
-      errors.keterangan = "Keterangan wajib diisi";
-    }
-
     setEditErrors(errors);
     return Object.keys(errors).length === 0;
   };
