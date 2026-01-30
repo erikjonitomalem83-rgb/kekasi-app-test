@@ -380,7 +380,7 @@ export default function ReservedNumbersList({
                         required
                         autoComplete="off"
                         disabled={isExpired}
-                        placeholder={isExpired ? "Sesi berakhir" : "Keterangan * (Wajib Diisi)"}
+                        placeholder={isExpired ? "Sesi berakhir" : "Isi Keterangan Surat "}
                         className={`w-full px-3 md:px-4 py-1.5 md:py-2.5 bg-gray-50/30 border rounded-xl text-[10px] md:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all placeholder:text-gray-400 shadow-inner ${
                           !nomor.keterangan || nomor.keterangan.trim() === ""
                             ? "border-red-200 bg-red-50/10"
