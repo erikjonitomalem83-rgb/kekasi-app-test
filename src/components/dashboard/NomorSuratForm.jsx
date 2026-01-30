@@ -29,7 +29,7 @@ const NomorSuratForm = ({
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm md:shadow-md border border-gray-200 max-w-sm md:max-w-lg mx-4 md:mx-auto overflow-hidden min-h-[500px] md:min-h-[480px] flex flex-col">
+    <div className="bg-white rounded-xl shadow-sm md:shadow-md border border-gray-200 max-w-sm md:max-w-lg mx-4 md:mx-auto overflow-hidden min-h-[520px] md:min-h-[500px] flex flex-col">
       <div className="bg-[#efbc62] border-b border-[#efbc62]/20 py-3 md:py-4 px-4 md:px-6 mb-4 md:mb-6">
         <h2 style={{ color: "#00325f" }} className="text-sm md:text-lg font-semibold text-center">
           Formulir Pemesanan Nomor Surat
@@ -297,7 +297,7 @@ const NomorSuratForm = ({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+          <div className="flex flex-col md:flex-row flex-wrap gap-3 mt-auto pt-10 md:pt-14">
             <button
               type="submit"
               disabled={
@@ -305,7 +305,7 @@ const NomorSuratForm = ({
                 (reservedNumbers && reservedNumbers.length > 0) ||
                 (lockStatus.isLocked && lockStatus.lockedByUserId !== profile.id)
               }
-              className="w-full sm:flex-[2] font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm tracking-tight bg-[#efbc62] text-[#00325f] hover:brightness-105"
+              className="w-full md:w-auto md:flex-[2] font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm tracking-tight bg-[#efbc62] text-[#00325f] hover:brightness-105"
             >
               <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -328,7 +328,7 @@ const NomorSuratForm = ({
               type="button"
               onClick={onShowNomorLama}
               disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
-              className="w-full sm:flex-1 bg-purple-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-purple-700 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
+              className="w-full md:w-auto md:flex-1 bg-purple-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-purple-700 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
             >
               Nomor Lama
             </button>
@@ -336,7 +336,7 @@ const NomorSuratForm = ({
               type="button"
               onClick={onReset}
               disabled={isSubmitting || (reservedNumbers && reservedNumbers.length > 0)}
-              className="w-full sm:flex-1 bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl hover:bg-gray-300 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
+              className="w-full md:w-auto md:flex-1 bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl hover:bg-gray-300 transition shadow-md active:scale-95 disabled:opacity-50 text-xs md:text-sm whitespace-nowrap"
             >
               Reset Form
             </button>
