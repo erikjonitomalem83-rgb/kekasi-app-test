@@ -27,7 +27,8 @@ function App() {
         <div
           className={`p-4 rounded-lg mb-6 ${
             dbStatus === "connected" ? "bg-green-100" : dbStatus === "error" ? "bg-red-100" : "bg-yellow-100"
-          }`}>
+          }`}
+        >
           <p className="font-semibold mb-2">
             {dbStatus === "checking" && "⏳ Checking database connection..."}
             {dbStatus === "connected" && "✅ Database connected successfully!"}

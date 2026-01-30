@@ -19,7 +19,8 @@ export default function Button({
       className={`px-4 py-2 rounded-lg font-semibold transition ${styles[variant]}`}
       onClick={onClick}
       disabled={disabled}
-      {...props}>
+      {...props}
+    >
       {children}
     </button>
   );

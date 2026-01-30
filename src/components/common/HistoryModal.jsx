@@ -59,6 +59,12 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
   });
   const [editErrors, setEditErrors] = useState({});
 
+  // State untuk menyimpan nilai awal sub saat fokus
+  const [originalSubValues, setOriginalSubValues] = useState({
+    subMasalah1: "",
+    subMasalah2: "",
+  });
+
   const notification = useNotification();
 
   const loadHistory = async () => {
@@ -670,9 +676,21 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                       onChange={(e) =>
                                         handleEditInputChange("subMasalah1", e.target.value.replace(/\D/g, ""))
                                       }
+                                      onFocus={() => {
+                                        setOriginalSubValues((prev) => ({
+                                          ...prev,
+                                          subMasalah1: editingData.subMasalah1,
+                                        }));
+                                        handleEditInputChange("subMasalah1", "");
+                                      }}
                                       onBlur={(e) => {
                                         const val = e.target.value;
-                                        if (val && val.length === 1) handleEditInputChange("subMasalah1", `0${val}`);
+                                        if (!val) {
+                                          // Kembalikan nilai awal jika kosong
+                                          handleEditInputChange("subMasalah1", originalSubValues.subMasalah1);
+                                        } else if (val.length === 1) {
+                                          handleEditInputChange("subMasalah1", `0${val}`);
+                                        }
                                       }}
                                       className="w-10 px-1.5 py-1 border rounded text-xs"
                                     />
@@ -683,9 +701,21 @@ export default function HistoryModal({ isOpen, onClose, profile, isAdmin, isSupe
                                       onChange={(e) =>
                                         handleEditInputChange("subMasalah2", e.target.value.replace(/\D/g, ""))
                                       }
+                                      onFocus={() => {
+                                        setOriginalSubValues((prev) => ({
+                                          ...prev,
+                                          subMasalah2: editingData.subMasalah2,
+                                        }));
+                                        handleEditInputChange("subMasalah2", "");
+                                      }}
                                       onBlur={(e) => {
                                         const val = e.target.value;
-                                        if (val && val.length === 1) handleEditInputChange("subMasalah2", `0${val}`);
+                                        if (!val) {
+                                          // Kembalikan nilai awal jika kosong
+                                          handleEditInputChange("subMasalah2", originalSubValues.subMasalah2);
+                                        } else if (val.length === 1) {
+                                          handleEditInputChange("subMasalah2", `0${val}`);
+                                        }
                                       }}
                                       className="w-10 px-1.5 py-1 border rounded text-xs"
                                     />
