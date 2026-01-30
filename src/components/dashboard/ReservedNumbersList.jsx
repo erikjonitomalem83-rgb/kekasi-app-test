@@ -373,16 +373,19 @@ export default function ReservedNumbersList({
                       </div>
                     </div>
 
-                    {/* DESCRIPTION INPUT (Adaptive) */}
-                    <div className="relative">
+                    <div className="relative group">
                       <input
                         ref={(el) => (inputRefs.current[`${nomor.id}-ket`] = el)}
                         type="text"
                         required
                         autoComplete="off"
                         disabled={isExpired}
-                        placeholder={isExpired ? "Sesi berakhir" : "Keterangan (Opsional)"}
-                        className="w-full px-3 md:px-4 py-1.5 md:py-2.5 bg-gray-50/30 border border-gray-200 rounded-xl text-[10px] md:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all placeholder:text-gray-300 shadow-inner"
+                        placeholder={isExpired ? "Sesi berakhir" : "Keterangan * (Wajib Diisi)"}
+                        className={`w-full px-3 md:px-4 py-1.5 md:py-2.5 bg-gray-50/30 border rounded-xl text-[10px] md:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all placeholder:text-gray-400 shadow-inner ${
+                          !nomor.keterangan || nomor.keterangan.trim() === ""
+                            ? "border-red-200 bg-red-50/10"
+                            : "border-gray-200"
+                        }`}
                         onChange={(e) => onItemDataChange(nomor.id, "keterangan", e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === "Tab") {
@@ -409,6 +412,14 @@ export default function ReservedNumbersList({
                         }}
                         value={nomor.keterangan || ""}
                       />
+                      {(!nomor.keterangan || nomor.keterangan.trim() === "") && !isExpired && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+                          <span className="text-red-500 font-bold text-xs">*</span>
+                          <span className="text-[10px] font-bold text-red-400/60 uppercase tracking-tighter">
+                            Wajib Diisi
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
